@@ -4,7 +4,7 @@
         "post0": {
             "title": "First Post",
             "content": "This is a first attempt towards creating a blog . Hope it goes well .",
-            "url": "https://deepayan137.github.io/tinkerbox/2020/06/24/First-Post.html",
+            "url": "https://deepayan137.github.io/deepayan137.github.io/2020/06/24/First-Post.html",
             "relUrl": "/2020/06/24/First-Post.html",
             "date": " • Jun 24, 2020"
         }
@@ -18,8 +18,8 @@
   
       ,"page1": {
           "title": "About Me",
-          "content": "This is where you put the contents of your About page. Like all your pages, it’s in Markdown format. . This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
-          "url": "https://deepayan137.github.io/tinkerbox/about/",
+          "content": ".",
+          "url": "https://deepayan137.github.io/deepayan137.github.io/about/",
           "relUrl": "/about/",
           "date": ""
       }
@@ -51,7 +51,7 @@
       ,"page10": {
           "title": "",
           "content": "Sitemap: {{ “sitemap.xml” | absolute_url }} | .",
-          "url": "https://deepayan137.github.io/tinkerbox/robots.txt",
+          "url": "https://deepayan137.github.io/deepayan137.github.io/robots.txt",
           "relUrl": "/robots.txt",
           "date": ""
       }
