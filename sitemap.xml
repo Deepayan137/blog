@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>https://deepayan137.github.io/tinkerbox/2020/06/24/First-Post.html</loc>
+<loc>https://deepayan137.github.io/blog/2020/06/24/First-Post.html</loc>
 <lastmod>2020-06-24T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>https://deepayan137.github.io/tinkerbox/about/</loc>
+<loc>https://deepayan137.github.io/blog/about/</loc>
 </url>
 <url>
-<loc>https://deepayan137.github.io/tinkerbox/</loc>
+<loc>https://deepayan137.github.io/blog/</loc>
 </url>
 <url>
-<loc>https://deepayan137.github.io/tinkerbox/search/</loc>
+<loc>https://deepayan137.github.io/blog/search/</loc>
 </url>
 <url>
-<loc>https://deepayan137.github.io/tinkerbox/categories/</loc>
+<loc>https://deepayan137.github.io/blog/categories/</loc>
 </url>
 </urlset>
