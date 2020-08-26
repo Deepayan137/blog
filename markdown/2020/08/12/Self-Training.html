@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>An Example Markdown Post | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="An Example Markdown Post" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
+<meta property="og:description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-12T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"An Example Markdown Post","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>An Example Markdown Post | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="An Example Markdown Post" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
+<meta property="og:description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-12T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"An Example Markdown Post","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">myblog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">An Example Markdown Post</h1><p class="page-description">An introductory blog describing Semi-supervised Learning Algorithm</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-08-12T00:00:00-05:00" itemprop="datePublished">
+        Aug 12, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      6 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#markdown">markdown</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h1"><a href="#a-primer-on-semi-supervised-learning">A primer on semi-supervised Learning</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#transfer-learning">Transfer Learning</a></li>
+<li class="toc-entry toc-h2"><a href="#semi-supervised-learning">Semi-supervised Learning</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#label-propagation">Label Propagation</a></li>
+<li class="toc-entry toc-h3"><a href="#self-training">Self-training</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><h1 id="a-primer-on-semi-supervised-learning">
+<a class="anchor" href="#a-primer-on-semi-supervised-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>A primer on semi-supervised Learning</h1>
+
+<p>Deep Learning (DL) algorithms typically rely on a huge amount of labelled data pairs. However, it is often expensive to collect such annotated datasets in terms of both cost and time. ImageNet, the largest image database in the present day consists of around 14 million images. Each image in it was hand-annotated by several annotators using a crowdsourcing platform known as Amazon Mechanical Turk. There are several other image datasets like PASCAL VOC and MS COCO which consist far fewer images compared to ImageNet (10k and 100k respectively) and it is possible to train a DL network on such dataset satisfactorily to learn a new task. However, the general trend in DL literature suggests that the performance of the models can further be improved if more and more data is added.</p>
+
+<h2 id="transfer-learning">
+<a class="anchor" href="#transfer-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transfer Learning</h2>
+
+<p>As mentioned above Deep Learning algorithms are essentially data-hungry methods which require tons of data to estimate its millions of parameters. This property effectively renders it useless to problems that have limited training data. However, DL models have this remarkable ability where the representations learned over large datasets can be effectively transferred to tasks which have a limited amount of training data. [2] explored applied this idea and applied it to train deep CNN models on limited labelled data. The observed that</p>
+
+<blockquote>
+  <p>CNN can act as a generic extractor of mid-level image representation, which can be pre-trained on one dataset (the source task) and then re-used on other target tasks.</p>
+</blockquote>
+
+<p>The authors pre-trained a network on 1000 classes of ImageNet data and used to perform object detection on Pascal VOC data. Applying this method they were able to achieve a significant gain in performance compared to the existing baseline results. Besides, transfer learning has shown great promise in other computer vision tasks such as segmentation [3] and recognition [4].</p>
+
+<p>Although, transfer learning is a very useful trick for improving gains on tasks with limited training data, yet it <strong>does not take advantage of the massive amounts of unlabeled data</strong> available over the internet. Also, it suffers from the <strong>in consequence of having to annotate a portion of target data</strong> which can prove to be quite a lot if the task involves speech or text recognition. In such a case each word and utterance has to be correctly transcribed manually which can prove to be very tedious and time-consuming.</p>
+
+<h2 id="semi-supervised-learning">
+<a class="anchor" href="#semi-supervised-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Semi-supervised Learning</h2>
+
+<p>These above drawbacks can be easily overcome by semi-supervised learning algorithms which are designed is such a way that they can work with both labelled and unlabeled data. Consider Google Images or Instagram. A simple query can fetch you thousands of results. However, the retrieved images are unstructured and unannotated and cannot be put to use if we are using supervised learning algorithms. Semi-supervised learning algorithms, on the other hand, make use of not only the labelled target data but also use the myriads of unlabeled data to learn better representations. This property gives an edge to the SSL algorithms over traditional finetuning approaches. There exist mainly two approaches towards implementing SSL. The first approach involves passing of the unlabeled images through different augmentations and perturbations. Since the images are constant, the model predictions should not be swayed by the perturbations and predict the same label. Forcing the model to come up with the same prediction under a different set of noise/perturbation can act as a source of regularization and together with the supervised loss term, it helps the DL model towards more stable generalization during testing and also helps the model learn more robust invariant features [5, 6]. The second approach involves inferring labels for the unlabeled data and which is then ( <em>pseudo-labelled data</em>) used to train the model with a supervised loss term. The second approach which is also known as pseudo-labelling falls under the category of transductive learning where both labelled and unlabeled data is used to improve the performance of a model. Labels for the unlabeled data can be inferred in two ways. 1) By constructing a graph and propagating labels from known to unknown data points and 2) By using an existing pre-trained classifier to invoke the labels unlabeled data points.</p>
+
+<h3 id="label-propagation">
+<a class="anchor" href="#label-propagation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Label Propagation</h3>
+
+<p>Label propagation [7, 8] deals with the construction of a graph between the labelled and unlabeled data points which is later used to propagate the labels from labelled to unlabeled data using cluster assumptions. Label Propagation comprises of two steps: construction of a graph and inference. In the graph construction stage, data points of both labelled and unlabeled data form the nodes while the edges represent the similarity between the data points. Larger edge weights indicate higher similarity between the data points and vice-versa. The most common technique to create a graph is using a clustering algorithm such as kNN where the edge weights are obtained using as a Euclidean based distance function. In the inference stage, the labels from the labelled data are propagated to their nearest unlabeled data points along with a certainty score which is simply the Euclidean distance from the nearest labelled data point.</p>
+
+<h3 id="self-training">
+<a class="anchor" href="#self-training" aria-hidden="true"><span class="octicon octicon-link"></span></a>Self-training</h3>
+
+<p>Self-training [9, 10] was one of the earliest attempts to use unlabeled data to boost model performance. Self-training comprises of two stages: Initially, the model is trained on a limited amount of labelled data using a supervised method. In the next stage, the learned model is used to predict the labels of unlabeled data points. Finally, the model is trained on both the labelled and unlabeled data where the predictions of unlabeled data are treated as target labels. One of the major concerns of self-training is that initial trained model might predict a significant amount of unlabeled data erroneously. This might bring down the performance of a model while training rather than improving. Care should be taken to minimize the number of noisy predictions in the training set. One way to do so would be to screen the predictions effectively and include only those predictions on which the model is highly confident. Despite the screening measure, some noisy predictions still manage to creep into the training data, which hinders the learning of the ML algorithm. Most works in this domain discuss providing perturbations to the input data or model as a way to overcome confirmation bias. We will see in the next few sections of how linear perturbation is known as <em>mixup</em> [11] and as well as some other regularization method are used to improve the performance of a text recognition system on an unlabeled target dataset.</p>
+
+<p>In the next post, we will get our hands dirty trying to implement self-training algorithm on a classic computer vision problem of text-recognition or more commonly known as OCR.</p>
+
+<p>[1] <a href="https://arxiv.org/abs/1409.0575">ImageNet Large Scale Visual Recognition Challenge</a></p>
+
+<p>[2] <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Oquab_Learning_and_Transferring_2014_CVPR_paper.pdf">Learning and Transferring Mid-Level Image Representations using Convolutional Neural Networks</a></p>
+
+<p>[3] <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Long_Fully_Convolutional_Networks_2015_CVPR_paper.pdf">Fully Convolutional Networks for Semantic Segmentation</a></p>
+
+<p>[4] <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a></p>
+
+<p>[5] <a href="https://arxiv.org/pdf/1606.04586.pdf">Regularization With Stochastic Transformations and Perturbations for Deep Semi-Supervised Learning</a>]</p>
+
+<p>[6] <a href="https://arxiv.org/pdf/1610.02242.pdf">Temporal Ensembling for semi-supervised learning</a></p>
+
+<p>[7] <a href="https://arxiv.org/pdf/1904.04717.pdf">Label Propagation for Deep Semi-supervised Learning</a></p>
+
+<p>[8] <a href="https://arxiv.org/abs/1706.00909">Learning by association â€“ a versatile semi-supervised training method for neural networks</a></p>
+
+<p>[9] <a href="https://ieeexplore.ieee.org/abstract/document/1053799">Probability of error of some adaptive pattern-recognition machines</a></p>
+
+<p>[10] <a href="Learning%20to%20recognize%20patterns%20without%20a%20teacher">Learning to recognize patterns without a teacher</a></p>
+
+<p>[11] <a href="https://arxiv.org/pdf/1710.09412.pdf">mixup beyond empirical risk minimization</a></p>
+
+  </div><a class="u-url" href="/blog/markdown/2020/08/12/Self-Training.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog for all things awesome</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/deepayan137" title="deepayan137"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/johnny_deep93" title="johnny_deep93"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
