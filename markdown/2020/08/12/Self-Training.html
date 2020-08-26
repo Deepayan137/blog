@@ -3,9 +3,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>An Example Markdown Post | myblog</title>
+<title>A primer on semi-supervised Learning | myblog</title>
 <meta name="generator" content="Jekyll v4.0.0" />
-<meta property="og:title" content="An Example Markdown Post" />
+<meta property="og:title" content="A primer on semi-supervised Learning" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
 <meta property="og:description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
@@ -15,12 +15,12 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-08-12T00:00:00-05:00" />
 <script type="application/ld+json">
-{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"An Example Markdown Post","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
+{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"A primer on semi-supervised Learning","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>An Example Markdown Post | myblog</title>
+<title>A primer on semi-supervised Learning | myblog</title>
 <meta name="generator" content="Jekyll v4.0.0" />
-<meta property="og:title" content="An Example Markdown Post" />
+<meta property="og:title" content="A primer on semi-supervised Learning" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
 <meta property="og:description" content="An introductory blog describing Semi-supervised Learning Algorithm" />
@@ -30,7 +30,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-08-12T00:00:00-05:00" />
 <script type="application/ld+json">
-{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"An Example Markdown Post","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
+{"description":"An introductory blog describing Semi-supervised Learning Algorithm","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/12/Self-Training.html","headline":"A primer on semi-supervised Learning","dateModified":"2020-08-12T00:00:00-05:00","datePublished":"2020-08-12T00:00:00-05:00","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 <link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
@@ -85,7 +85,7 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">An Example Markdown Post</h1><p class="page-description">An introductory blog describing Semi-supervised Learning Algorithm</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-08-12T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">A primer on semi-supervised Learning</h1><p class="page-description">An introductory blog describing Semi-supervised Learning Algorithm</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-08-12T00:00:00-05:00" itemprop="datePublished">
         Aug 12, 2020
       </time>
        • <span class="read-time" title="Estimated read time">
@@ -108,8 +108,6 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul class="section-nav">
-<li class="toc-entry toc-h1"><a href="#a-primer-on-semi-supervised-learning">A primer on semi-supervised Learning</a>
-<ul>
 <li class="toc-entry toc-h2"><a href="#transfer-learning">Transfer Learning</a></li>
 <li class="toc-entry toc-h2"><a href="#semi-supervised-learning">Semi-supervised Learning</a>
 <ul>
@@ -117,12 +115,7 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h3"><a href="#self-training">Self-training</a></li>
 </ul>
 </li>
-</ul>
-</li>
-</ul><h1 id="a-primer-on-semi-supervised-learning">
-<a class="anchor" href="#a-primer-on-semi-supervised-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>A primer on semi-supervised Learning</h1>
-
-<p>Deep Learning (DL) algorithms typically rely on a huge amount of labelled data pairs. However, it is often expensive to collect such annotated datasets in terms of both cost and time. ImageNet, the largest image database in the present day consists of around 14 million images. Each image in it was hand-annotated by several annotators using a crowdsourcing platform known as Amazon Mechanical Turk. There are several other image datasets like PASCAL VOC and MS COCO which consist far fewer images compared to ImageNet (10k and 100k respectively) and it is possible to train a DL network on such dataset satisfactorily to learn a new task. However, the general trend in DL literature suggests that the performance of the models can further be improved if more and more data is added.</p>
+</ul><p>Deep Learning (DL) algorithms typically rely on a huge amount of labelled data pairs. However, it is often expensive to collect such annotated datasets in terms of both cost and time. ImageNet, the largest image database in the present day consists of around 14 million images. Each image in it was hand-annotated by several annotators using a crowdsourcing platform known as Amazon Mechanical Turk. There are several other image datasets like PASCAL VOC and MS COCO which consist far fewer images compared to ImageNet (10k and 100k respectively) and it is possible to train a DL network on such dataset satisfactorily to learn a new task. However, the general trend in DL literature suggests that the performance of the models can further be improved if more and more data is added.</p>
 
 <h2 id="transfer-learning">
 <a class="anchor" href="#transfer-learning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transfer Learning</h2>
