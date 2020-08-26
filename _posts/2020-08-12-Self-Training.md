@@ -1,3 +1,11 @@
+---
+toc: true
+layout: post
+description: An introductory blog describing Semi-supervised Learning Algorithm
+categories: [markdown]
+title: An Example Markdown Post
+---
+
 # A primer on semi-supervised Learning
 
 Deep Learning (DL) algorithms typically rely on a huge amount of labelled data pairs. However, it is often expensive to collect such annotated datasets in terms of both cost and time. ImageNet, the largest image database in the present day consists of around 14 million images. Each image in it was hand-annotated by several annotators using a crowdsourcing platform known as Amazon Mechanical Turk. There are several other image datasets like PASCAL VOC and MS COCO which consist far fewer images compared to ImageNet (10k and 100k respectively) and it is possible to train a DL network on such dataset satisfactorily to learn a new task. However, the general trend in DL literature suggests that the performance of the models can further be improved if more and more data is added. 
