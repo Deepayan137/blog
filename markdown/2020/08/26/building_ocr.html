@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Building a custom OCR using pytorch | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Building a custom OCR using pytorch" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An implementation OCR from scratch in python." />
+<meta property="og:description" content="An implementation OCR from scratch in python." />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-26T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An implementation OCR from scratch in python.","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html","headline":"Building a custom OCR using pytorch","dateModified":"2020-08-26T00:00:00-05:00","datePublished":"2020-08-26T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Building a custom OCR using pytorch | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Building a custom OCR using pytorch" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An implementation OCR from scratch in python." />
+<meta property="og:description" content="An implementation OCR from scratch in python." />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-26T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An implementation OCR from scratch in python.","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html"},"@type":"BlogPosting","url":"https://deepayan137.github.io/blog/markdown/2020/08/26/building_ocr.html","headline":"Building a custom OCR using pytorch","dateModified":"2020-08-26T00:00:00-05:00","datePublished":"2020-08-26T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">myblog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Building a custom OCR using pytorch</h1><p class="page-description">An implementation OCR from scratch in python.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-08-26T00:00:00-05:00" itemprop="datePublished">
+        Aug 26, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      17 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#markdown">markdown</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h1"><a href="#building-an-ocr-from-scratch">Building an OCR from scratch</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#setting-up-the-data">Setting up the Data</a></li>
+<li class="toc-entry toc-h2"><a href="#defining-our-model">Defining our Model</a></li>
+<li class="toc-entry toc-h2"><a href="#the-ctc-loss">The CTC Loss</a></li>
+<li class="toc-entry toc-h2"><a href="#the-training-loop">The Training Loop</a></li>
+<li class="toc-entry toc-h2"><a href="#putting-everything-together">Putting Everything Together</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#defining-the-hyperparameters">Defining the hyperparameters</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#evaluation-and-testing">Evaluation and testing</a></li>
+</ul>
+</li>
+</ul><h1 id="building-an-ocr-from-scratch">
+<a class="anchor" href="#building-an-ocr-from-scratch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building an OCR from scratch</h1>
+
+<p>So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition.</p>
+
+<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. 
+So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
+
+<ul>
+  <li>Pytorch 1.5</li>
+  <li>Matplotlib</li>
+  <li>Tqdm</li>
+  <li>textdistance</li>
+  <li>lmdb</li>
+</ul>
+
+<p>You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple <code class="highlighter-rouge">pip install -r requirements</code> and you are set to go.</p>
+
+<h2 id="setting-up-the-data">
+<a class="anchor" href="#setting-up-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up the Data</h2>
+
+<p>We will start our project by importing the libraries. But before that we need data. Now, you are free to use any text image data you might like and for that, you might need to build your own data loader. However, in the interest of keeping things simple, we will be using a neat little package called <code class="highlighter-rouge">trdg</code>, which is a synthetic image generator for OCR. You can find all the relevant information regarding this package on its <a href="https://github.com/Belval/TextRecognitionDataGenerator">github repository</a>. You can generate printed as well as hand-written text images and infuse them with different kinds of noise and degradation. In this project, I have used trdg to generate printed word images of a single font. You can use any font you like. Just download a <code class="highlighter-rouge">.ttf</code> file for your font and while generating the word images be sure to specify the <code class="highlighter-rouge">-ft</code> parameter as your font file.</p>
+
+<p>You can generate the word images for training using the following commands:</p>
+
+<p><code class="highlighter-rouge">trdg -i words.txt -c 20000 --output_dir data/train -ft your/fontfile</code></p>
+
+<p>Here, <code class="highlighter-rouge">-c</code> refers to the number of word images you want to generate. <code class="highlighter-rouge">words.txt</code> file contains our input word vocabulary while <code class="highlighter-rouge">--output_dir</code> and <code class="highlighter-rouge">-ft</code> refer to the output and font file respectively. You can similarly generate the test word images for evaluating the performance of your OCR. However, ensure that words for training and testing are mutually exclusive to each other.</p>
+
+<p>Okay, now that we have generated the word images, let us display a few images using matlplotlib
+%# TODO diplay images from folder</p>
+
+<p>Now lets start importing the libraries that we would need to build our OCR</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">lmdb</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">sampler</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">torch.optim.lr_scheduler</span> <span class="kn">import</span> <span class="n">CosineAnnealingLR</span><span class="p">,</span> <span class="n">StepLR</span>
+<span class="kn">from</span> <span class="nn">torch.nn.utils.clip_grad</span> <span class="kn">import</span> <span class="n">clip_grad_norm_</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">random_split</span>
+
+<span class="kn">from</span> <span class="nn">src.utils.utils</span> <span class="kn">import</span> <span class="n">AverageMeter</span><span class="p">,</span> <span class="n">Eval</span><span class="p">,</span> <span class="n">OCRLabelConverter</span>
+<span class="kn">from</span> <span class="nn">src.utils.utils</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">gmkdir</span>
+<span class="kn">from</span> <span class="nn">src.optim.optimizer</span> <span class="kn">import</span> <span class="n">STLR</span>
+<span class="kn">from</span> <span class="nn">src.utils.utils</span> <span class="kn">import</span> <span class="n">gaussian</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="o">*</span>
+
+</code></pre></div></div>
+
+<p>Next, let us create our data pipe-line. We do this by inheriting the PyTorch Dataset class. The Dataset class has few methods that we need to adhere to like the <code class="highlighter-rouge">__len__</code> and <code class="highlighter-rouge">__getitem__</code> method. The <code class="highlighter-rouge">__len__</code> method returns the number of items in our dataset while <code class="highlighter-rouge">__getitem_</code> returns the data item for the index passed. You can find more information on PyTorch Dataset class on PyTorch’s official documentation page.</p>
+
+<p>You will observe that we first convert each image into grayscale and convert it into a tensor. This is followed by normalizing the images so that our input data lies within a range of [-1, 1]. We pass all such transformations into a list and later call the transforms to compose function provided by PyTorch. The transform Compose function applies each transformation in the pre-defined order.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SynthDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SynthDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'path'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'imgdir'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nSamples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imagepaths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">))</span>
+       	<span class="n">transform_list</span> <span class="o">=</span>  <span class="p">[</span><span class="n">transforms</span><span class="o">.</span><span class="n">Grayscale</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                            <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span> 
+                            <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span><span class="n">transform_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collate_fn</span> <span class="o">=</span> <span class="n">SynthCollator</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSamples</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">index</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s">'index range error'</span>
+        <span class="n">imagepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imagepaths</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">imagefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">imagepath</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">imagepath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s">'img'</span><span class="p">:</span> <span class="n">img</span><span class="p">,</span> <span class="s">'idx'</span><span class="p">:</span><span class="n">index</span><span class="p">}</span>
+        <span class="n">item</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span> <span class="o">=</span> <span class="n">imagefile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'_'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">item</span> 
+
+</code></pre></div></div>
+
+<p>Next, since we are going to train our model using the mini-batch gradient descent, it is essential that each image in the batch is of the same shape and size. For this, we have defined the <code class="highlighter-rouge">SynthCollator</code> class which initially finds the image with maximum width in the batch and then proceeds to pad all images to have the same width.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SynthCollator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s">'idx'</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+        <span class="n">imgs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">'img'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">'img'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
+                           <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">imgs</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">item</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="s">'img'</span><span class="p">:</span> <span class="n">imgs</span><span class="p">,</span> <span class="s">'idx'</span><span class="p">:</span><span class="n">indexes</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s">'label'</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+            <span class="n">item</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="k">return</span> <span class="n">item</span>
+</code></pre></div></div>
+
+<h2 id="defining-our-model">
+<a class="anchor" href="#defining-our-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining our Model</h2>
+
+<p>Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper <a href="https://arxiv.org/pdf/1507.05717.pdf">An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition</a>. The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.</p>
+
+<p><img src="images/crnn.png" alt="drawing" width="400"></p>
+
+<p>The figure above shows the architecture used in the paper. The authors used a 7 layered Convolution network with BatchNorm and ReLU. This was followed by a stacked RNN network consisting of two Bidirectional LSTM layers. The convolution layers acted as a feature extractor while the LSTMs layers act as sequence classifiers. The LSTM layers output the probability associated with each output class at each time step
+Further details can be found in their paper and I strongly suggest you go through it for a better understanding.</p>
+
+<p>The below code snippet is taken from this <a href="https://github.com/meijieru/crnn.pytorch">github repository</a> which provides a Pytorch implementation of their code.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BidirectionalLSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nIn</span><span class="p">,</span> <span class="n">nHidden</span><span class="p">,</span> <span class="n">nOut</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BidirectionalLSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">nIn</span><span class="p">,</span> <span class="n">nHidden</span><span class="p">,</span> <span class="n">bidirectional</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">nHidden</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nOut</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">flatten_parameters</span><span class="p">()</span>
+        <span class="n">recurrent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">recurrent</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">t_rec</span> <span class="o">=</span> <span class="n">recurrent</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">t_rec</span><span class="p">)</span>  <span class="c1"># [T * b, nOut]
+</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<span class="k">class</span> <span class="nc">CRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">leakyRelu</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">opt</span><span class="p">[</span><span class="s">'imgH'</span><span class="p">]</span> <span class="o">%</span> <span class="mi">16</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'imgH has to be a multiple of 16'</span>
+
+        <span class="n">ks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">nm</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">]</span>
+
+        <span class="n">cnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">convRelu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">batchNormalization</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+            <span class="n">nIn</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'nChannels'</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">nm</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">nOut</span> <span class="o">=</span> <span class="n">nm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'conv{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                           <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">nIn</span><span class="p">,</span> <span class="n">nOut</span><span class="p">,</span> <span class="n">ks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ss</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ps</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">batchNormalization</span><span class="p">:</span>
+                <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'batchnorm{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">nOut</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">leakyRelu</span><span class="p">:</span>
+                <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'relu{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+                               <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'relu{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
+
+        <span class="n">convRelu</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'pooling{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># 64x16x64
+</span>        <span class="n">convRelu</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'pooling{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># 128x8x32
+</span>        <span class="n">convRelu</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">convRelu</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'pooling{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+                       <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>  <span class="c1"># 256x4x16
+</span>        <span class="n">convRelu</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">convRelu</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">cnn</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">'pooling{0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+                       <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>  <span class="c1"># 512x2x16
+</span>        <span class="n">convRelu</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>  <span class="c1"># 512x1x16
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">cnn</span> <span class="o">=</span> <span class="n">cnn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">BidirectionalLSTM</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'nHidden'</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">opt</span><span class="p">[</span><span class="s">'nHidden'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'nHidden'</span><span class="p">]),</span>
+            <span class="n">BidirectionalLSTM</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'nHidden'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'nHidden'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'nClasses'</span><span class="p">]))</span>
+
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="c1"># conv features
+</span>        <span class="n">conv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cnn</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">h</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s">"the height of conv must be 1"</span>
+        <span class="n">conv</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">conv</span> <span class="o">=</span> <span class="n">conv</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># [w, b, c]
+</span>        <span class="c1"># rnn features
+</span>        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">conv</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#Tbh to bth
+</span>        <span class="k">return</span> <span class="n">output</span>
+</code></pre></div></div>
+
+<h2 id="the-ctc-loss">
+<a class="anchor" href="#the-ctc-loss" aria-hidden="true"><span class="octicon octicon-link"></span></a>The CTC Loss</h2>
+
+<p>Okay, now that we have our data and model pipeline ready, it is time to define our loss function which in our case is the CTC loss function. We will be using PyTorch’s excellent CTC implementation. CTC stands for Connectionist Temporal Classification and was proposed by Alex Graves in his paper <a href="https://www.cs.toronto.edu/~graves/icml_2006.pdf">Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks</a>.</p>
+
+<p>Honestly, the above work has been a gamechanger for many sequences based tasks like speech and text recognition. For all the sequence-based tasks it is important for the input and output labels to be properly aligned. Proper alignment leads to efficient loss computation between the network predictions and expected output. In segmentation based approaches i.e. when the input word or line has been segmented into its constituent characters, there exists a direct one-to-one mapping between the segmented images of characters and the output labels.  However, as you might imagine obtaining such segmentations for each character can be a very tedious and time-consuming task. Thus, CTC based transcription layers have become the de-facto choice for OCRs and speech recognition module since it allows loss computation without explicit mapping between the input and output. The CTC layer takes the output from the LSTMs and computes a score with all possible alignments of the target label. The OCR is then trained to predict a sequence which maximizes the sum of all such scores.</p>
+
+<p>If you want more thorough details regarding the CTC layer I would suggest you go through the following blogs and lecture video</p>
+
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=c86gfVGcvh4&amp;t=670s">CMU Deep Learning Course Lecture 14</a></li>
+  <li><a href="https://distill.pub/2017/ctc">Sequence Labelling with CTC</a></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CustomCTCLoss</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="c1"># T x B x H =&gt; Softmax on dimension 2
+</span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctc_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CTCLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s">'mean'</span><span class="p">,</span> <span class="n">zero_infinity</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span>
+            <span class="n">prediction_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">):</span>
+        <span class="n">EPS</span> <span class="o">=</span> <span class="mf">1e-7</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctc_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">prediction_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sanitize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">prediction_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">sanitize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+        <span class="n">EPS</span> <span class="o">=</span> <span class="mf">1e-7</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="s">'inf'</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">EPS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span>
+            <span class="n">prediction_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"Loss:"</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"logits:"</span><span class="p">,</span> <span class="n">logits</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"labels:"</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"prediction_sizes:"</span><span class="p">,</span> <span class="n">prediction_sizes</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"target_sizes:"</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"NaN loss obtained. But why?"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+</code></pre></div></div>
+
+<h2 id="the-training-loop">
+<a class="anchor" href="#the-training-loop" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Training Loop</h2>
+
+<p>The above code snippet builds a wrapper around pytorch’s CTC loss function. Basically, what it does is that it computes the loss and passes it through an additional method called <code class="highlighter-rouge">debug</code>, which checks for instances when the loss becomes Nan.</p>
+
+<p>Shout out to <a href="https://jerinphilip.github.io/">Jerin Philip</a> for this code.</p>
+
+<p>Now, let us come to the training loop. The below code might look a bit cumbersome but it provides a nice abstraction which is quite intuitive and easy to use. The below code is based on <a href="https://github.com/PyTorchLightning/pytorch-lightning">pytorch lighning</a>’s bolier plate template with few modifications of my own. :P</p>
+
+<p>I will give a basic overview of what it does. Feel free to inspect each method using python debugger. So, the <code class="highlighter-rouge">OCRTrainer</code> class takes in the training and validation data. It also takes in the loss function, optimizer and the number of epoch it needs to train the model. The train and validation loader method returns the data loader for the train and validation data. the <code class="highlighter-rouge">run_batch</code> method does one forward pass for a batch of image-label pairs. It returns the loss as well as the character and word accuracy. Next, we have the step functions which does the backpropagation, calculates the gradient and updates the parameters for each batch of data. Besides we also have the <code class="highlighter-rouge">training_end</code> and <code class="highlighter-rouge">validation_end</code> methods that calculate the mean loss and accuracy for each batch after the completion of one single epoch</p>
+
+<p>All, the methods defined are quite simple and I hope you will get the hang of it in no time.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">OCRTrainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OCRTrainer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_train</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'data_train'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_val</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'data_val'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'model'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'criterion'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'optimizer'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'schedule'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">OCRLabelConverter</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'alphabet'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">Eval</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'Scheduling is {}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">CosineAnnealingLR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">opt</span><span class="p">[</span><span class="s">'epochs'</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'batch_size'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'epoch'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'epochs'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cuda</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'cuda'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collate_fn</span> <span class="o">=</span> <span class="n">opt</span><span class="p">[</span><span class="s">'collate_fn'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_meters</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">init_meters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainLoss</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Train loss"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainCharAccuracy</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Train Character Accuracy"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainWordAccuracy</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Train Word Accuracy"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgValLoss</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Validation loss"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgValCharAccuracy</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Validation Character Accuracy"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgValWordAccuracy</span> <span class="o">=</span> <span class="n">AverageMeter</span><span class="p">(</span><span class="s">"Validation Word Accuracy"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logits</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">loss_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">pred_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">pred_sizes</span><span class="p">,</span> <span class="n">target_sizes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_grad_norm</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_grad_norm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">schedule_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_run_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">report_accuracy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">input_</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s">'img'</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span>
+        <span class="n">targets</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">pred_sizes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)])</span>
+        <span class="n">targets</span><span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">pred_sizes</span><span class="p">,</span> <span class="n">lengths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">report_accuracy</span><span class="p">:</span>
+            <span class="n">probs</span><span class="p">,</span> <span class="n">preds</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">preds</span> <span class="o">=</span> <span class="n">preds</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">sim_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pred_sizes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">char_accuracy</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sim_preds</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="s">'label'</span><span class="p">]))))))</span>
+            <span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">word_accuracy</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sim_preds</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="s">'label'</span><span class="p">]))))))</span>
+        <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">ca</span><span class="p">,</span> <span class="n">wa</span>
+
+    <span class="k">def</span> <span class="nf">run_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="p">:</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+            <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">'Epoch: [</span><span class="si">%</span><span class="s">d]/[</span><span class="si">%</span><span class="s">d] Training'</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">),</span> <span class="n">leave</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_dataloader</span><span class="p">()</span>
+            <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">'Validating'</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">batch_nb</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pbar</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_step</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule_lr</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validation</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_end</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_end</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">loss</span><span class="p">,</span> <span class="n">ca</span><span class="p">,</span> <span class="n">wa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">report_accuracy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">'loss'</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
+            <span class="s">'train_ca'</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s">'train_wa'</span><span class="p">:</span> <span class="n">wa</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="p">})</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span> <span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">loss</span><span class="p">,</span> <span class="n">ca</span><span class="p">,</span> <span class="n">wa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">report_accuracy</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">'val_loss'</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
+            <span class="s">'val_ca'</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s">'val_wa'</span><span class="p">:</span> <span class="n">wa</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="p">})</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span> <span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># logging.info('training data loader called')
+</span>        <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_train</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">collate_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collate_fn</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loader</span>
+        
+    <span class="k">def</span> <span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># logging.info('val data loader called')
+</span>        <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_val</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">collate_fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">collate_fn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loader</span>
+
+    <span class="k">def</span> <span class="nf">train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainLoss</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'loss'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainCharAccuracy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'train_ca'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainWordAccuracy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'train_wa'</span><span class="p">])</span>
+
+        <span class="n">train_loss_mean</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avgTrainLoss</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span>
+        <span class="n">train_ca_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainCharAccuracy</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">train_wa_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avgTrainWordAccuracy</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s">'train_loss'</span><span class="p">:</span> <span class="n">train_loss_mean</span><span class="p">,</span> <span class="s">'train_ca'</span><span class="p">:</span> <span class="n">train_ca_mean</span><span class="p">,</span>
+        <span class="s">'train_wa'</span><span class="p">:</span> <span class="n">train_wa_mean</span><span class="p">}</span>
+        <span class="c1"># result = {'progress_bar': tqdm_dict, 'log': tqdm_dict, 'val_loss': train_loss_mean}
+</span>        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgValLoss</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'val_loss'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgValCharAccuracy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'val_ca'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avgValWordAccuracy</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">'val_wa'</span><span class="p">])</span>
+
+        <span class="n">val_loss_mean</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avgValLoss</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span>
+        <span class="n">val_ca_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avgValCharAccuracy</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">val_wa_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avgValWordAccuracy</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s">'val_loss'</span><span class="p">:</span> <span class="n">val_loss_mean</span><span class="p">,</span> <span class="s">'val_ca'</span><span class="p">:</span> <span class="n">val_ca_mean</span><span class="p">,</span>
+        <span class="s">'val_wa'</span><span class="p">:</span> <span class="n">val_wa_mean</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></div>
+
+<h2 id="putting-everything-together">
+<a class="anchor" href="#putting-everything-together" aria-hidden="true"><span class="octicon octicon-link"></span></a>Putting Everything Together</h2>
+
+<p>And, finally, we have the <code class="highlighter-rouge">Learner</code> class. It implements a couple of more methods like the <code class="highlighter-rouge">save</code> and <code class="highlighter-rouge">load</code> model. It also tracks the losses and saves them in a <code class="highlighter-rouge">csv</code> file. This comes in handy if we want to analyze the behaviour of our training and validation loops. It initializes our <code class="highlighter-rouge">OCRTrainer</code> module with the necessary hyperparameters and later calls the <code class="highlighter-rouge">fit</code> method which runs the training loop.</p>
+
+<p>Besides these methods, we have a bunch of helper methods like the <code class="highlighter-rouge">OCRLabel_converter</code>, <code class="highlighter-rouge">Eval</code> and <code class="highlighter-rouge">Averagemeter</code>. I am not including them in this notebook, instead, I have written them in utils.py file and I am importing them from there. In case you want to take a peek, feel free to tinker with the utils.py file. All the necessary documentation is provided in the file itself.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Learner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">savepath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">savepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="s">'best.ckpt'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cuda</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda_count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"Let's use"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">device_count</span><span class="p">(),</span> <span class="s">"GPUs!"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_score</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">resume</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">savepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">savepath</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'epoch'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_score</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'best'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">'checkpoint does not exist'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+        <span class="n">opt</span><span class="p">[</span><span class="s">'cuda'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cuda</span>
+        <span class="n">opt</span><span class="p">[</span><span class="s">'model'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+        <span class="n">opt</span><span class="p">[</span><span class="s">'optimizer'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">"</span><span class="si">%</span><span class="s">s/</span><span class="si">%</span><span class="s">s.csv"</span> <span class="o">%</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'log_dir'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'name'</span><span class="p">]),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saver</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">savepath</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">best_score</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">best_score</span><span class="p">)</span>
+        <span class="n">opt</span><span class="p">[</span><span class="s">'epoch'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">OCRTrainer</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">opt</span><span class="p">[</span><span class="s">'epoch'</span><span class="p">],</span> <span class="n">opt</span><span class="p">[</span><span class="s">'epochs'</span><span class="p">]):</span>
+            <span class="n">train_result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">()</span>
+            <span class="n">val_result</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">run_epoch</span><span class="p">(</span><span class="n">validation</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">epoch</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s">'</span><span class="si">%</span><span class="s">d, </span><span class="si">%.6</span><span class="s">f, </span><span class="si">%.6</span><span class="s">f, </span><span class="si">%.6</span><span class="s">f, </span><span class="si">%.6</span><span class="s">f, </span><span class="si">%.6</span><span class="s">f, </span><span class="si">%.6</span><span class="s">f'</span><span class="o">%</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">train_result</span><span class="p">[</span><span class="s">'train_loss'</span><span class="p">],</span> 
+                <span class="n">val_result</span><span class="p">[</span><span class="s">'val_loss'</span><span class="p">],</span> <span class="n">train_result</span><span class="p">[</span><span class="s">'train_ca'</span><span class="p">],</span>  <span class="n">val_result</span><span class="p">[</span><span class="s">'val_ca'</span><span class="p">],</span>
+                <span class="n">train_result</span><span class="p">[</span><span class="s">'train_wa'</span><span class="p">],</span> <span class="n">val_result</span><span class="p">[</span><span class="s">'val_wa'</span><span class="p">])</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_loss</span> <span class="o">=</span> <span class="n">val_result</span><span class="p">[</span><span class="s">'val_loss'</span><span class="p">]</span>
+            <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_loss</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">savepath</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">saver</span><span class="o">.</span><span class="n">early_stop</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">"Early stopping"</span><span class="p">)</span>
+                <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'Loading checkpoint at {} trained for {} epochs'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">savepath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'epoch'</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'state_dict'</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s">'opt_state_dict'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">'Loading optimizer'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'opt_state_dict'</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_loss</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="defining-the-hyperparameters">
+<a class="anchor" href="#defining-the-hyperparameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining the hyperparameters</h3>
+
+<p>Okay, now that we have set the premise, its time to unfold the drama. We begin by defining our vocabulary i.e. the alphabets which serve as the output classes for our model.
+We define a suitable name for this experiment which will also serve as the folder name where the checkpoints and log files will be stored. We also define the hyper-parameters like the batch size, learning rate, image height, number of channels etc.</p>
+
+<p>Then we initialize our Dataset class and split the data into train and validation. We then proceed to initialize our Model and CTCLoss and finally call the <code class="highlighter-rouge">learner.fit</code> function.</p>
+
+<p>Once the training is over we can find the saved model in the <code class="highlighter-rouge">checkpoints/name</code> folder. We may load the model and evaluate its performance on the test data or finetune it on some other data.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">alphabet</span> <span class="o">=</span> <span class="s">"""Only thewigsofrcvdampbkuq.$A-210xT5'MDL,RYHJ"ISPWENj&amp;BC93VGFKz();#:!7U64Q8?+*ZX/</span><span class="si">%</span><span class="s">"""</span>
+<span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'name'</span><span class="p">:</span><span class="s">'exp1'</span><span class="p">,</span>
+    <span class="s">'path'</span><span class="p">:</span><span class="s">'data'</span><span class="p">,</span>
+    <span class="s">'imgdir'</span><span class="p">:</span> <span class="s">'train'</span><span class="p">,</span>
+    <span class="s">'imgH'</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span>
+    <span class="s">'nChannels'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s">'nHidden'</span><span class="p">:</span><span class="mi">256</span><span class="p">,</span>
+    <span class="s">'nClasses'</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">alphabet</span><span class="p">),</span>
+    <span class="s">'lr'</span><span class="p">:</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="s">'epochs'</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+    <span class="s">'batch_size'</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span>
+    <span class="s">'save_dir'</span><span class="p">:</span><span class="s">'checkpoints'</span><span class="p">,</span>
+    <span class="s">'log_dir'</span><span class="p">:</span><span class="s">'logs'</span><span class="p">,</span>
+    <span class="s">'resume'</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span>
+    <span class="s">'cuda'</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span>
+    <span class="s">'schedule'</span><span class="p">:</span><span class="bp">False</span>
+    
+<span class="p">}</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">SynthDataset</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="n">args</span><span class="p">[</span><span class="s">'collate_fn'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SynthCollator</span><span class="p">()</span>
+<span class="n">train_split</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.8</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">val_split</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">train_split</span>
+<span class="n">args</span><span class="p">[</span><span class="s">'data_train'</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="s">'data_val'</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">train_split</span><span class="p">,</span> <span class="n">val_split</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'Traininig Data Size:{}</span><span class="se">\n</span><span class="s">Val Data Size:{}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'data_train'</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'data_val'</span><span class="p">])))</span>
+<span class="n">args</span><span class="p">[</span><span class="s">'alphabet'</span><span class="p">]</span> <span class="o">=</span> <span class="n">alphabet</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CRNN</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="n">args</span><span class="p">[</span><span class="s">'criterion'</span><span class="p">]</span> <span class="o">=</span> <span class="n">CustomCTCLoss</span><span class="p">()</span>
+<span class="n">savepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'save_dir'</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="s">'name'</span><span class="p">])</span>
+<span class="n">gmkdir</span><span class="p">(</span><span class="n">savepath</span><span class="p">)</span>
+<span class="n">gmkdir</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'log_dir'</span><span class="p">])</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s">'lr'</span><span class="p">])</span>
+<span class="n">learner</span> <span class="o">=</span> <span class="n">Learner</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">savepath</span><span class="o">=</span><span class="n">savepath</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s">'resume'</span><span class="p">])</span>
+<span class="n">learner</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="evaluation-and-testing">
+<a class="anchor" href="#evaluation-and-testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluation and testing</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">torchvision.utils</span> <span class="kn">import</span> <span class="n">make_grid</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda:0"</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_accuracy</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'data'</span><span class="p">],</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s">'batch_size'</span><span class="p">],</span>
+                <span class="n">collate_fn</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="s">'collate_fn'</span><span class="p">])</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s">'model'</span><span class="p">]</span>
+    <span class="n">model</span><span class="o">.</span><span class="nb">eval</span><span class="p">()</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="n">OCRLabelConverter</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'alphabet'</span><span class="p">])</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">Eval</span><span class="p">()</span>
+    <span class="n">labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">images</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">loader</span><span class="p">)):</span>
+        <span class="n">input_</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s">'img'</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">batch</span><span class="p">[</span><span class="s">'label'</span><span class="p">]</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">input_</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+        <span class="n">targets</span><span class="p">,</span> <span class="n">lengths</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">pred_sizes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)])</span>
+        <span class="n">probs</span><span class="p">,</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sim_preds</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">pred_sizes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">predictions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sim_preds</span><span class="p">)</span>
+        
+<span class="c1">#     make_grid(images[:10], nrow=2)
+</span>    <span class="n">fig</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">columns</span><span class="o">*</span><span class="n">rows</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span> <span class="o">-</span> <span class="n">img</span><span class="o">.</span><span class="nb">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="nb">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">img</span><span class="o">.</span><span class="nb">min</span><span class="p">())</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span> <span class="o">*</span> <span class="mf">255.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">evaluator</span><span class="o">.</span><span class="n">char_accuracy</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">labels</span><span class="p">))))))</span>
+    <span class="n">wa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">evaluator</span><span class="o">.</span><span class="n">word_accuracy_line</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">labels</span><span class="p">))))))</span>
+    <span class="k">return</span> <span class="n">ca</span><span class="p">,</span> <span class="n">wa</span>
+
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="p">[</span><span class="s">'imgdir'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'test'</span>
+<span class="n">args</span><span class="p">[</span><span class="s">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">SynthDataset</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="n">resume_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">'save_dir'</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="s">'name'</span><span class="p">],</span> <span class="s">'best.ckpt'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">resume_file</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Loading model </span><span class="si">%</span><span class="s">s'</span><span class="o">%</span><span class="n">resume_file</span><span class="p">)</span>
+    <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resume_file</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s">'state_dict'</span><span class="p">])</span>
+    <span class="n">args</span><span class="p">[</span><span class="s">'model'</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">ca</span><span class="p">,</span> <span class="n">wa</span> <span class="o">=</span> <span class="n">get_accuracy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Character Accuracy: </span><span class="si">%.2</span><span class="s">f</span><span class="se">\n</span><span class="s">Word Accuracy: </span><span class="si">%.2</span><span class="s">f"</span><span class="o">%</span><span class="p">(</span><span class="n">ca</span><span class="p">,</span> <span class="n">wa</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"=&gt; no checkpoint found at '{}'"</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">save_file</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'Exiting'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0%|          | 0/2 [00:00&lt;?, ?it/s]
+
+Loading model checkpoints/exp1/best.ckpt
+
+
+100%|██████████| 2/2 [00:00&lt;00:00,  2.25it/s]
+</code></pre></div></div>
+
+<p><img src="imgages/output_21_3.png" alt="png"></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Character Accuracy: 98.89
+Word Accuracy: 0.98
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+  </div><a class="u-url" href="/blog/markdown/2020/08/26/building_ocr.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog for all things awesome</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/deepayan137" title="deepayan137"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/johnny_deep93" title="johnny_deep93"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
