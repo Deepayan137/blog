@@ -630,19 +630,9 @@ else:
 
 
 
-![png](images/output_21_3.png)
+![png](/images/output_21_3.png)
 
 
     Character Accuracy: 98.89
     Word Accuracy: 0.98
 
-
-
-```python
-
-```
-
-
-```python
-
-```
