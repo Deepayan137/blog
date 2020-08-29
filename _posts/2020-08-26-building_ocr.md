@@ -630,7 +630,7 @@ else:
 
 
 
-![png](imgages/output_21_3.png)
+![png](images/output_21_3.png)
 
 
     Character Accuracy: 98.89
