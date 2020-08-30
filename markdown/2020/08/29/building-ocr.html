@@ -91,7 +91,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      17 min read
+      18 min read
     
 </span></p>
 
@@ -108,8 +108,6 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul class="section-nav">
-<li class="toc-entry toc-h1"><a href="#building-an-ocr-from-scratch">Building an OCR from scratch</a>
-<ul>
 <li class="toc-entry toc-h2"><a href="#setting-up-the-data">Setting up the Data</a></li>
 <li class="toc-entry toc-h2"><a href="#defining-our-model">Defining our Model</a></li>
 <li class="toc-entry toc-h2"><a href="#the-ctc-loss">The CTC Loss</a></li>
@@ -120,15 +118,13 @@ window.onload = wrap_img;
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#evaluation-and-testing">Evaluation and testing</a></li>
-</ul>
-</li>
-</ul><h1 id="building-an-ocr-from-scratch">
-<a class="anchor" href="#building-an-ocr-from-scratch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building an OCR from scratch</h1>
+</ul><p><img src="/blog/images/blog-2-cover.png" alt=""></p>
 
 <p>So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition.</p>
 
-<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. 
-So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
+<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this <a href="https://github.com/Deepayan137/Adapting-OCR">repo</a>. So, in case you want to run the code alongside just do a <code class="highlighter-rouge">git clone https://github.com/Deepayan137/Adapting-OCR</code></p>
+
+<p>So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
 
 <ul>
   <li>Pytorch 1.5</li>
@@ -248,7 +244,7 @@ So first things first, I’ll start with listing down some of the essential pack
 
 <p>Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper <a href="https://arxiv.org/pdf/1507.05717.pdf">An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition</a>. The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.</p>
 
-<p><img src="images/crnn.png" alt="drawing" width="400"></p>
+<p><img src="/blog/images/crnn.png" alt="drawing" width="400"></p>
 
 <p>The figure above shows the architecture used in the paper. The authors used a 7 layered Convolution network with BatchNorm and ReLU. This was followed by a stacked RNN network consisting of two Bidirectional LSTM layers. The convolution layers acted as a feature extractor while the LSTMs layers act as sequence classifiers. The LSTM layers output the probability associated with each output class at each time step
 Further details can be found in their paper and I strongly suggest you go through it for a better understanding.</p>
@@ -660,6 +656,10 @@ We define a suitable name for this experiment which will also serve as the folde
 
 <h2 id="evaluation-and-testing">
 <a class="anchor" href="#evaluation-and-testing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluation and testing</h2>
+
+<p>Once, our model is trained we can evaluate its performance on the test data. I have written a separate function <code class="highlighter-rouge">get_accuracy</code> which takes in the trained model and the test data and performs a forward pass which gives us the logits. Once we get the logits we perform an argmax operation at each time step which we treat as our predicted class. Finally, we perform a decoding operation which converts the token ids to their respective class ids. We compare the predicted string with its corresponding ground-truth which gives us the accuracy. We do it for all the images in our test data and take the mean accuracy.</p>
+
+<p>We also display random 20 images from our test data with its corresponding predicted label using the Matplotlib library</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">from</span> <span class="nn">torchvision.utils</span> <span class="kn">import</span> <span class="n">make_grid</span>
