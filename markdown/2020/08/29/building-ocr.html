@@ -91,7 +91,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      18 min read
+      19 min read
     
 </span></p>
 
@@ -118,14 +118,17 @@ window.onload = wrap_img;
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#evaluation-and-testing">Evaluation and testing</a></li>
+<li class="toc-entry toc-h2"><a href="#conclusion">Conclusion</a></li>
 </ul><p><img src="/blog/images/cover-blog-2.jpg" alt=""></p>
 
-<p>So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition.</p>
+<p>So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Scanning the document or taking picture seems like a viable alternative, however if you want to perform search and retrieval or some other edit actions on the document then OCR is the way to go.Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition.</p>
 
-<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this <a href="https://github.com/Deepayan137/Adapting-OCR">repo</a>. So, in case you want to run the code alongside just do a 
+<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this <a href="https://github.com/Deepayan137/Adapting-OCR">repo</a>. So, in case you want to run the code alongside just do a quick
 <code class="highlighter-rouge">git clone https://github.com/Deepayan137/Adapting-OCR</code></p>
 
-<p>So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
+<p>This blog assumes that you are fairly familiar with Python and Pytorch deep learning framework. If not then I will recommend you going through the Pytorch 60 minutes blitz example. It provides a nice primer on the Pytorch framework. For more details consider going through FastAi’s course.</p>
+
+<p>So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. As mentioned we will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
 
 <ul>
   <li>Pytorch 1.5</li>
@@ -135,13 +138,13 @@ window.onload = wrap_img;
   <li>lmdb</li>
 </ul>
 
-<p>You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple 
-<code class="highlighter-rouge">pip install -r requirements</code> and you are set to go.</p>
+<p>You can install them either via a pip or conda. I will also be providing a requirements.txt in my file which you can find in my Github repo. Do a simple 
+<code class="highlighter-rouge">pip install -r requirements</code> and you are good to go.</p>
 
 <h2 id="setting-up-the-data">
 <a class="anchor" href="#setting-up-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up the Data</h2>
 
-<p>We will start our project by importing the libraries. But before that we need data. Now, you are free to use any text image data you might like and for that, you might need to build your own data loader. However, in the interest of keeping things simple, we will be using a neat little package called <code class="highlighter-rouge">trdg</code>, which is a synthetic image generator for OCR. You can find all the relevant information regarding this package on its <a href="https://github.com/Belval/TextRecognitionDataGenerator">github repository</a>. You can generate printed as well as hand-written text images and infuse them with different kinds of noise and degradation. In this project, I have used trdg to generate printed word images of a single font. You can use any font you like. Just download a <code class="highlighter-rouge">.ttf</code> file for your font and while generating the word images be sure to specify the <code class="highlighter-rouge">-ft</code> parameter as your font file.</p>
+<p>We will start our project by importing the necessary libraries. But before that we need data. Now, you are free to use any data you might like (as long as it is related to documents) and for that, you might need to build your own data loader. However, in the interest of keeping things simple, we will be using a neat little package called <code class="highlighter-rouge">trdg</code>, which is a synthetic image generator for OCR. You can find all the relevant information regarding this package on its <a href="https://github.com/Belval/TextRecognitionDataGenerator">github repository</a>. You can generate printed as well as hand-written text images and infuse them with different kinds of noise and degradation. In this project, I have used trdg to generate printed word images of a single font. You can use any font you like. Just download a <code class="highlighter-rouge">.ttf</code> file for your font and while generating the word images be sure to specify the <code class="highlighter-rouge">-ft</code> parameter as your font file.</p>
 
 <p>You can generate the word images for training using the following commands:</p>
 
@@ -149,10 +152,10 @@ window.onload = wrap_img;
 
 <p>Here, <code class="highlighter-rouge">-c</code> refers to the number of word images you want to generate. <code class="highlighter-rouge">words.txt</code> file contains our input word vocabulary while <code class="highlighter-rouge">--output_dir</code> and <code class="highlighter-rouge">-ft</code> refer to the output and font file respectively. You can similarly generate the test word images for evaluating the performance of your OCR. However, ensure that words for training and testing are mutually exclusive to each other.</p>
 
-<p>Okay, now that we have generated the word images, let us display a few images using matlplotlib
+<p>Now that we have generated the word images, let us display a few images using matlplotlib
 %# TODO diplay images from folder</p>
 
-<p>Now lets start importing the libraries that we would need to build our OCR</p>
+<p>Lets start importing the libraries that we would need to build our OCR</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -188,7 +191,7 @@ window.onload = wrap_img;
 
 <p>Next, let us create our data pipe-line. We do this by inheriting the PyTorch Dataset class. The Dataset class has few methods that we need to adhere to like the <code class="highlighter-rouge">__len__</code> and <code class="highlighter-rouge">__getitem__</code> method. The <code class="highlighter-rouge">__len__</code> method returns the number of items in our dataset while <code class="highlighter-rouge">__getitem_</code> returns the data item for the index passed. You can find more information on PyTorch Dataset class on PyTorch’s official documentation page.</p>
 
-<p>You will observe that we first convert each image into grayscale and convert it into a tensor. This is followed by normalizing the images so that our input data lies within a range of [-1, 1]. We pass all such transformations into a list and later call the transforms to compose function provided by PyTorch. The transform Compose function applies each transformation in the pre-defined order.</p>
+<p>You will observe that we first convert each image into grayscale and convert it into a tensor. This is followed by normalizing the images so that our input data lies within a range of [-1, 1]. We pass all such transformations into a list and later call the transforms to <code class="highlighter-rouge">.Compose</code> function provided by PyTorch. The <code class="highlighter-rouge">transforms.Compose</code> function applies each transformation in a pre-defined order.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SynthDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
@@ -220,7 +223,7 @@ window.onload = wrap_img;
 
 </code></pre></div></div>
 
-<p>Next, since we are going to train our model using the mini-batch gradient descent, it is essential that each image in the batch is of the same shape and size. For this, we have defined the <code class="highlighter-rouge">SynthCollator</code> class which initially finds the image with maximum width in the batch and then proceeds to pad all images to have the same width.</p>
+<p>Next, since we are going to train our model using the mini-batch gradient descent, it is essential that each image in the batch is of the same shape and size. For this, we have defined the <code class="highlighter-rouge">SynthCollator</code> class which initially finds the image with maximum width in the batch and then proceeds to pad the remaining images to have the same width. You migh wonder as to why we are not concerned with the height, it is because while generating the images using the <code class="highlighter-rouge">trdg</code> package, I had fixed the height to 32 pixels.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SynthCollator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     
@@ -332,7 +335,7 @@ Further details can be found in their paper and I strongly suggest you go throug
 <h2 id="the-ctc-loss">
 <a class="anchor" href="#the-ctc-loss" aria-hidden="true"><span class="octicon octicon-link"></span></a>The CTC Loss</h2>
 
-<p>Okay, now that we have our data and model pipeline ready, it is time to define our loss function which in our case is the CTC loss function. We will be using PyTorch’s excellent CTC implementation. CTC stands for Connectionist Temporal Classification and was proposed by Alex Graves in his paper <a href="https://www.cs.toronto.edu/~graves/icml_2006.pdf">Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks</a>.</p>
+<p>Cool, now that we have our data and model pipeline ready, it is time to define our loss function which in our case is the CTC loss function. We will be using PyTorch’s excellent CTC implementation. CTC stands for Connectionist Temporal Classification and was proposed by Alex Graves in his paper <a href="https://www.cs.toronto.edu/~graves/icml_2006.pdf">Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks</a>.</p>
 
 <p>Honestly, the above work has been a gamechanger for many sequences based tasks like speech and text recognition. For all the sequence-based tasks it is important for the input and output labels to be properly aligned. Proper alignment leads to efficient loss computation between the network predictions and expected output. In segmentation based approaches i.e. when the input word or line has been segmented into its constituent characters, there exists a direct one-to-one mapping between the segmented images of characters and the output labels.  However, as you might imagine obtaining such segmentations for each character can be a very tedious and time-consuming task. Thus, CTC based transcription layers have become the de-facto choice for OCRs and speech recognition module since it allows loss computation without explicit mapping between the input and output. The CTC layer takes the output from the LSTMs and computes a score with all possible alignments of the target label. The OCR is then trained to predict a sequence which maximizes the sum of all such scores.</p>
 
@@ -384,11 +387,12 @@ Further details can be found in their paper and I strongly suggest you go throug
 
 <p>Shout out to <a href="https://jerinphilip.github.io/">Jerin Philip</a> for this code.</p>
 
-<p>Now, let us come to the training loop. The below code might look a bit cumbersome but it provides a nice abstraction which is quite intuitive and easy to use. The below code is based on <a href="https://github.com/PyTorchLightning/pytorch-lightning">pytorch lighning</a>’s bolier plate template with few modifications of my own. :P</p>
+<p>Till now we have defined all the important components which we need to build our OCR. We have defined the data pipeline, our model as well as the loss function. Now its time to talk abot our training loop. 
+The below code might look a bit cumbersome but it provides a nice abstraction which is quite intuitive and easy to use. The code is based on <a href="https://github.com/PyTorchLightning/pytorch-lightning">pytorch lighning</a>’s bolier plate template with few modifications of my own. :P</p>
 
-<p>I will give a basic overview of what it does. Feel free to inspect each method using python debugger. So, the <code class="highlighter-rouge">OCRTrainer</code> class takes in the training and validation data. It also takes in the loss function, optimizer and the number of epoch it needs to train the model. The train and validation loader method returns the data loader for the train and validation data. the <code class="highlighter-rouge">run_batch</code> method does one forward pass for a batch of image-label pairs. It returns the loss as well as the character and word accuracy. Next, we have the step functions which does the backpropagation, calculates the gradient and updates the parameters for each batch of data. Besides we also have the <code class="highlighter-rouge">training_end</code> and <code class="highlighter-rouge">validation_end</code> methods that calculate the mean loss and accuracy for each batch after the completion of one single epoch</p>
+<p>I will give a basic overview of what it does. Feel free to inspect each method using python debugger. The <code class="highlighter-rouge">OCRTrainer</code> class takes in the training and validation data. It also takes in the loss function, optimizer and the number of epochs it needs to train the model. The train and validation loader method returns the data loader for the train and validation data. The <code class="highlighter-rouge">run_batch</code> method does one forward pass for a batch of image-label pairs. It returns the loss as well as the character and word accuracy. Next, we have the step function which performs the backpropagation, calculates the gradients and updates the parameters for each batch of data. Besides we also have the <code class="highlighter-rouge">training_end</code> and <code class="highlighter-rouge">validation_end</code> methods that calculate the mean loss and accuracy for all the batchs after the completion of one single epoch</p>
 
-<p>All, the methods defined are quite simple and I hope you will get the hang of it in no time.</p>
+<p>The methods defined are quite simple and I hope you will get the hang of it in no time.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">OCRTrainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
@@ -547,7 +551,7 @@ Further details can be found in their paper and I strongly suggest you go throug
 <h2 id="putting-everything-together">
 <a class="anchor" href="#putting-everything-together" aria-hidden="true"><span class="octicon octicon-link"></span></a>Putting Everything Together</h2>
 
-<p>And, finally, we have the <code class="highlighter-rouge">Learner</code> class. It implements a couple of more methods like the <code class="highlighter-rouge">save</code> and <code class="highlighter-rouge">load</code> model. It also tracks the losses and saves them in a <code class="highlighter-rouge">csv</code> file. This comes in handy if we want to analyze the behaviour of our training and validation loops. It initializes our <code class="highlighter-rouge">OCRTrainer</code> module with the necessary hyperparameters and later calls the <code class="highlighter-rouge">fit</code> method which runs the training loop.</p>
+<p>Finally, we have the <code class="highlighter-rouge">Learner</code> class. It implements a couple more methods like the <code class="highlighter-rouge">save</code> and <code class="highlighter-rouge">load</code>. It also tracks the losses and saves them in a <code class="highlighter-rouge">csv</code> file. This comes in handy if we want to analyze the behaviour of our training and validation loops. It initializes our <code class="highlighter-rouge">OCRTrainer</code> module with the necessary hyperparameters and later calls the <code class="highlighter-rouge">fit</code> method which runs the training loop.</p>
 
 <p>Besides these methods, we have a bunch of helper methods like the <code class="highlighter-rouge">OCRLabel_converter</code>, <code class="highlighter-rouge">Eval</code> and <code class="highlighter-rouge">Averagemeter</code>. I am not including them in this notebook, instead, I have written them in utils.py file and I am importing them from there. In case you want to take a peek, feel free to tinker with the utils.py file. All the necessary documentation is provided in the file itself.</p>
 
@@ -612,7 +616,7 @@ Further details can be found in their paper and I strongly suggest you go throug
 <h3 id="defining-the-hyperparameters">
 <a class="anchor" href="#defining-the-hyperparameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining the hyperparameters</h3>
 
-<p>Okay, now that we have set the premise, its time to unfold the drama. We begin by defining our vocabulary i.e. the alphabets which serve as the output classes for our model.
+<p>We have come a long way now and there is just one more hurdle to cross before we can start training our model. We begin by defining our vocabulary i.e. the alphabets which serve as the output classes for our model.
 We define a suitable name for this experiment which will also serve as the folder name where the checkpoints and log files will be stored. We also define the hyper-parameters like the batch size, learning rate, image height, number of channels etc.</p>
 
 <p>Then we initialize our Dataset class and split the data into train and validation. We then proceed to initialize our Model and CTCLoss and finally call the <code class="highlighter-rouge">learner.fit</code> function.</p>
@@ -738,8 +742,13 @@ Loading model checkpoints/exp1/best.ckpt
 <p><img src="/blog/images/output_21_3.png" alt=""></p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Character Accuracy: 98.89
-Word Accuracy: 0.98
+Word Accuracy: 98.03
 </code></pre></div></div>
+
+<h2 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h2>
+
+<p>In this blog we looked at how we can build an OCR from scratch using PyTorch. For this we defined the three basic module i.e. the data module, the model and a custom loss fucntion. We then tied a wrapper around the modules in the form of a <code class="highlighter-rouge">OCRTrainer</code> class which handles the forward and backward propadation as well as the accuracies. We also defined our <code class="highlighter-rouge">Learner</code> class which contains the <code class="highlighter-rouge">fit</code> method which initilizes the <code class="highlighter-rouge">Trainer</code> class and starts training OCR model and later saves it. Finally we tested our model on a heldout set and evaluated its performance in terms of Character and Word accuracy.</p>
 
 
   </div><a class="u-url" href="/blog/markdown/2020/08/29/building-ocr.html" hidden></a>
