@@ -6,11 +6,12 @@ categories: [markdown]
 title: Building a custom OCR using pytorch
 ---
 
-![](/blog/images/blog-2-cover.png)
+![](/blog/images/cover-blog-2.png)
 
 So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition. 
 
-Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this [repo](https://github.com/Deepayan137/Adapting-OCR). So, in case you want to run the code alongside just do a `git clone https://github.com/Deepayan137/Adapting-OCR`
+Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this [repo](https://github.com/Deepayan137/Adapting-OCR). So, in case you want to run the code alongside just do a 
+`git clone https://github.com/Deepayan137/Adapting-OCR`
 
 So first things first, I'll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:
 
@@ -20,7 +21,8 @@ So first things first, I'll start with listing down some of the essential packag
 * textdistance
 * lmdb
 
-You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple `pip install -r requirements` and you are set to go.
+You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple 
+`pip install -r requirements` and you are set to go.
 
 ## Setting up the Data
 
