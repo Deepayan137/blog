@@ -1,34 +1,29 @@
 ---
 toc: true
 layout: post
-description: An implementation of OCR from scratch in python.
+description: An implementation OCR from scratch in python.
 categories: [markdown]
 title: Building a custom OCR using pytorch
-coments: true
 ---
 
-![](/blog/images/cover-blog-2.jpg)
+# Building an OCR from scratch
 
-So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. One simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Scanning the document or taking picture seems like a viable alternative, however if you want to perform search and retrieval or some other edit actions on the document then OCR is the way to go.Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition. 
+So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition. 
 
-Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this [repo](https://github.com/Deepayan137/Adapting-OCR). So, in case you want to run the code alongside just do a quick
-`git clone https://github.com/Deepayan137/Adapting-OCR`
+Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. 
+So first things first, I'll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:
 
-This blog assumes that you are fairly familiar with Python and Pytorch deep learning framework. If not then I will recommend you going through the Pytorch [60 minutes blitz](https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html) page. It provides a nice primer on the Pytorch framework. For more details consider going through Fastai course.
-
-So first things first, I'll start with listing down some of the essential packages that you would need to build your first OCR. As mentioned we will be working with PyTorch 1.5 as it is one of the most efficient deep learning libraries present. The other packages are as follows:
-
+* Pytorch 1.5
 * Matplotlib
 * Tqdm
 * textdistance
 * lmdb
 
-You can install them either via a pip or conda. I will also be providing a requirements.txt which you can find in my Github repo. Do a simple 
-`pip install -r requirements` and you are good to go.
+You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple `pip install -r requirements` and you are set to go.
 
 ## Setting up the Data
 
-We will start our project by importing the necessary libraries. But before that we need data. Now, you are free to use any data you might like (as long as it is related to documents) and for that, you might need to build your own data loader. However, in the interest of keeping things simple, we will be using a neat little package called `trdg`, which is a synthetic image generator for OCR. You can find all the relevant information regarding this package on its [github repository](https://github.com/Belval/TextRecognitionDataGenerator). You can generate printed as well as hand-written text images and infuse them with different kinds of noise and degradation. In this project, I have used `trdg` to generate printed word images of a single font. You can use any font you like. Just download a `.ttf` file for your font and while generating the word images be sure to specify the `-ft` parameter as your font file. 
+We will start our project by importing the libraries. But before that we need data. Now, you are free to use any text image data you might like and for that, you might need to build your own data loader. However, in the interest of keeping things simple, we will be using a neat little package called `trdg`, which is a synthetic image generator for OCR. You can find all the relevant information regarding this package on its [github repository](https://github.com/Belval/TextRecognitionDataGenerator). You can generate printed as well as hand-written text images and infuse them with different kinds of noise and degradation. In this project, I have used trdg to generate printed word images of a single font. You can use any font you like. Just download a `.ttf` file for your font and while generating the word images be sure to specify the `-ft` parameter as your font file. 
 
 You can generate the word images for training using the following commands:
 
@@ -37,10 +32,10 @@ You can generate the word images for training using the following commands:
 Here, `-c` refers to the number of word images you want to generate. `words.txt` file contains our input word vocabulary while `--output_dir` and `-ft` refer to the output and font file respectively. You can similarly generate the test word images for evaluating the performance of your OCR. However, ensure that words for training and testing are mutually exclusive to each other.
 
 
-Now that we have generated the word images, let us display a few images using matlplotlib
+Okay, now that we have generated the word images, let us display a few images using matlplotlib
 %# TODO diplay images from folder
 
-Lets start importing the libraries that we would need to build our OCR
+Now lets start importing the libraries that we would need to build our OCR
 
 
 ```python
@@ -78,7 +73,7 @@ from tqdm import *
 
 Next, let us create our data pipe-line. We do this by inheriting the PyTorch Dataset class. The Dataset class has few methods that we need to adhere to like the `__len__` and `__getitem__` method. The `__len__` method returns the number of items in our dataset while `__getitem_` returns the data item for the index passed. You can find more information on PyTorch Dataset class on PyTorch's official documentation page. 
 
-You will observe that we first convert each image into grayscale and convert it into a tensor. This is followed by normalizing the images so that our input data lies within a range of [-1, 1]. We pass all such transformations into a list and later call the transforms to `.Compose` function provided by PyTorch. The `transforms.Compose` function applies each transformation in a pre-defined order.
+You will observe that we first convert each image into grayscale and convert it into a tensor. This is followed by normalizing the images so that our input data lies within a range of [-1, 1]. We pass all such transformations into a list and later call the transforms to compose function provided by PyTorch. The transform Compose function applies each transformation in the pre-defined order.
 
 
 ```python
@@ -112,7 +107,7 @@ class SynthDataset(Dataset):
 
 ```
 
-Next, since we are going to train our model using the mini-batch gradient descent, it is essential that each image in the batch is of the same shape and size. For this, we have defined the `SynthCollator` class which initially finds the image with maximum width in the batch and then proceeds to pad the remaining images to have the same width. You migh wonder as to why we are not concerned with the height, it is because while generating the images using the `trdg` package, I had fixed the height to 32 pixels.
+Next, since we are going to train our model using the mini-batch gradient descent, it is essential that each image in the batch is of the same shape and size. For this, we have defined the `SynthCollator` class which initially finds the image with maximum width in the batch and then proceeds to pad all images to have the same width. 
 
 
 ```python
@@ -137,11 +132,10 @@ class SynthCollator(object):
 
 ## Defining our Model
 
-Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper 
-[An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition](https://arxiv.org/pdf/1507.05717.pdf). The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.
+Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper [An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition](https://arxiv.org/pdf/1507.05717.pdf). The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.
 
 
-<img src="/blog/images/crnn.png" alt="drawing" width="400"/>
+<img src="images/crnn.png" alt="drawing" width="400"/>
 
 The figure above shows the architecture used in the paper. The authors used a 7 layered Convolution network with BatchNorm and ReLU. This was followed by a stacked RNN network consisting of two Bidirectional LSTM layers. The convolution layers acted as a feature extractor while the LSTMs layers act as sequence classifiers. The LSTM layers output the probability associated with each output class at each time step
 Further details can be found in their paper and I strongly suggest you go through it for a better understanding.
@@ -228,7 +222,7 @@ class CRNN(nn.Module):
 
 ## The CTC Loss 
 
-Cool, now that we have our data and model pipeline ready, it is time to define our loss function which in our case is the CTC loss function. We will be using PyTorch's excellent CTC implementation. CTC stands for Connectionist Temporal Classification and was proposed by Alex Graves in his paper [Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks](https://www.cs.toronto.edu/~graves/icml_2006.pdf). 
+Okay, now that we have our data and model pipeline ready, it is time to define our loss function which in our case is the CTC loss function. We will be using PyTorch's excellent CTC implementation. CTC stands for Connectionist Temporal Classification and was proposed by Alex Graves in his paper [Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks](https://www.cs.toronto.edu/~graves/icml_2006.pdf). 
 
 Honestly, the above work has been a gamechanger for many sequences based tasks like speech and text recognition. For all the sequence-based tasks it is important for the input and output labels to be properly aligned. Proper alignment leads to efficient loss computation between the network predictions and expected output. In segmentation based approaches i.e. when the input word or line has been segmented into its constituent characters, there exists a direct one-to-one mapping between the segmented images of characters and the output labels.  However, as you might imagine obtaining such segmentations for each character can be a very tedious and time-consuming task. Thus, CTC based transcription layers have become the de-facto choice for OCRs and speech recognition module since it allows loss computation without explicit mapping between the input and output. The CTC layer takes the output from the LSTMs and computes a score with all possible alignments of the target label. The OCR is then trained to predict a sequence which maximizes the sum of all such scores.
 
@@ -236,7 +230,6 @@ If you want more thorough details regarding the CTC layer I would suggest you go
 
 * [CMU Deep Learning Course Lecture 14](https://www.youtube.com/watch?v=c86gfVGcvh4&t=670s)
 * [Sequence Labelling with CTC](https://distill.pub/2017/ctc)
-
 
 
 ```python
@@ -280,12 +273,11 @@ The above code snippet builds a wrapper around pytorch's CTC loss function. Basi
 
 Shout out to [Jerin Philip](https://jerinphilip.github.io/) for this code.
 
-Till now we have defined all the important components which we need to build our OCR. We have defined the data pipeline, our model as well as the loss function. Now its time to talk abot our training loop. 
-The below code might look a bit cumbersome but it provides a nice abstraction which is quite intuitive and easy to use. The code is based on [pytorch lighning](https://github.com/PyTorchLightning/pytorch-lightning)'s bolier plate template with few modifications of my own. :P
+Now, let us come to the training loop. The below code might look a bit cumbersome but it provides a nice abstraction which is quite intuitive and easy to use. The below code is based on [pytorch lighning](https://github.com/PyTorchLightning/pytorch-lightning)'s bolier plate template with few modifications of my own. :P
 
-I will give a basic overview of what it does. Feel free to inspect each method using python debugger. The `OCRTrainer` class takes in the training and validation data. It also takes in the loss function, optimizer and the number of epochs it needs to train the model. The train and validation loader method returns the data loader for the train and validation data. The `run_batch` method does one forward pass for a batch of image-label pairs. It returns the loss as well as the character and word accuracy. Next, we have the step function which performs the backpropagation, calculates the gradients and updates the parameters for each batch of data. Besides we also have the `training_end` and `validation_end` methods that calculate the mean loss and accuracy for all the batchs after the completion of one single epoch
+I will give a basic overview of what it does. Feel free to inspect each method using python debugger. So, the `OCRTrainer` class takes in the training and validation data. It also takes in the loss function, optimizer and the number of epoch it needs to train the model. The train and validation loader method returns the data loader for the train and validation data. the `run_batch` method does one forward pass for a batch of image-label pairs. It returns the loss as well as the character and word accuracy. Next, we have the step functions which does the backpropagation, calculates the gradient and updates the parameters for each batch of data. Besides we also have the `training_end` and `validation_end` methods that calculate the mean loss and accuracy for each batch after the completion of one single epoch
 
-The methods defined are quite simple and I hope you will get the hang of it in no time.
+All, the methods defined are quite simple and I hope you will get the hang of it in no time.
 
 
 ```python
@@ -445,7 +437,7 @@ class OCRTrainer(object):
 
 ## Putting Everything Together
 
-Finally, we have the `Learner` class. It implements a couple more methods like the `save` and `load`. It also tracks the losses and saves them in a `csv` file. This comes in handy if we want to analyze the behaviour of our training and validation loops. It initializes our `OCRTrainer` module with the necessary hyperparameters and later calls the `fit` method which runs the training loop.
+And, finally, we have the `Learner` class. It implements a couple of more methods like the `save` and `load` model. It also tracks the losses and saves them in a `csv` file. This comes in handy if we want to analyze the behaviour of our training and validation loops. It initializes our `OCRTrainer` module with the necessary hyperparameters and later calls the `fit` method which runs the training loop.
 
 Besides these methods, we have a bunch of helper methods like the `OCRLabel_converter`, `Eval` and `Averagemeter`. I am not including them in this notebook, instead, I have written them in utils.py file and I am importing them from there. In case you want to take a peek, feel free to tinker with the utils.py file. All the necessary documentation is provided in the file itself.
 
@@ -511,7 +503,7 @@ class Learner(object):
 
 ### Defining the hyperparameters
 
-We have come a long way now and there is just one more hurdle to cross before we can start training our model. We begin by defining our vocabulary i.e. the alphabets which serve as the output classes for our model.
+Okay, now that we have set the premise, its time to unfold the drama. We begin by defining our vocabulary i.e. the alphabets which serve as the output classes for our model.
 We define a suitable name for this experiment which will also serve as the folder name where the checkpoints and log files will be stored. We also define the hyper-parameters like the batch size, learning rate, image height, number of channels etc.
 
 Then we initialize our Dataset class and split the data into train and validation. We then proceed to initialize our Model and CTCLoss and finally call the `learner.fit` function.
@@ -560,9 +552,6 @@ learner.fit(args)
 
 ## Evaluation and testing
 
-Once, our model is trained we can evaluate its performance on the test data. I have written a separate function `get_accuracy` which takes in the trained model and the test data and performs a forward pass which gives us the logits. Once we get the logits we perform an argmax operation at each time step which we treat as our predicted class. Finally, we perform a decoding operation which converts the token ids to their respective class ids. We compare the predicted string with its corresponding ground-truth which gives us the accuracy. We do it for all the images in our test data and take the mean accuracy.
-
-We also display random 20 images from our test data with its corresponding predicted label using the Matplotlib library
 
 ```python
 import matplotlib.pyplot as plt
@@ -641,16 +630,19 @@ else:
 
 
 
-![](/blog/images/output_21_3.png)
+![png](imgages/output_21_3.png)
 
 
     Character Accuracy: 98.89
-    Word Accuracy: 98.03
+    Word Accuracy: 0.98
 
 
 
-## Conclusion
+```python
 
-In this blog we looked at how we can build an OCR from scratch using PyTorch. For this we defined the three basic module i.e. the data module, the model and a custom loss fucntion. We then tied a wrapper around the modules in the form of a `OCRTrainer` class which handles the forward and backward propadation as well as the accuracies. We also defined our `Learner` class which contains the `fit` method which initilizes the `Trainer` class and starts training OCR model and later saves it. Finally we tested our model on a heldout set and evaluated its performance in terms of Character and Word accuracy.
+```
 
 
+```python
+
+```
