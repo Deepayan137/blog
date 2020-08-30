@@ -6,7 +6,7 @@ categories: [markdown]
 title: Building a custom OCR using pytorch
 ---
 
-![](/blog/images/cover-blog-2.png)
+![](/blog/images/cover-blog-2.jpg)
 
 So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition. 
 
@@ -135,7 +135,8 @@ class SynthCollator(object):
 
 ## Defining our Model
 
-Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper [An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition](https://arxiv.org/pdf/1507.05717.pdf). The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.
+Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper 
+[An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition](https://arxiv.org/pdf/1507.05717.pdf). The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.
 
 
 <img src="/blog/images/crnn.png" alt="drawing" width="400"/>
@@ -233,6 +234,7 @@ If you want more thorough details regarding the CTC layer I would suggest you go
 
 * [CMU Deep Learning Course Lecture 14](https://www.youtube.com/watch?v=c86gfVGcvh4&t=670s)
 * [Sequence Labelling with CTC](https://distill.pub/2017/ctc)
+
 
 
 ```python
