@@ -118,11 +118,12 @@ window.onload = wrap_img;
 </ul>
 </li>
 <li class="toc-entry toc-h2"><a href="#evaluation-and-testing">Evaluation and testing</a></li>
-</ul><p><img src="/blog/images/blog-2-cover.png" alt=""></p>
+</ul><p><img src="/blog/images/cover-blog-2.png" alt=""></p>
 
 <p>So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition.</p>
 
-<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this <a href="https://github.com/Deepayan137/Adapting-OCR">repo</a>. So, in case you want to run the code alongside just do a <code class="highlighter-rouge">git clone https://github.com/Deepayan137/Adapting-OCR</code></p>
+<p>Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this <a href="https://github.com/Deepayan137/Adapting-OCR">repo</a>. So, in case you want to run the code alongside just do a 
+<code class="highlighter-rouge">git clone https://github.com/Deepayan137/Adapting-OCR</code></p>
 
 <p>So first things first, I’ll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:</p>
 
@@ -134,7 +135,8 @@ window.onload = wrap_img;
   <li>lmdb</li>
 </ul>
 
-<p>You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple <code class="highlighter-rouge">pip install -r requirements</code> and you are set to go.</p>
+<p>You can install them either via a pip or conda. I will also be providing a requirements.txt file which you can find in my Github repo. Do a simple 
+<code class="highlighter-rouge">pip install -r requirements</code> and you are set to go.</p>
 
 <h2 id="setting-up-the-data">
 <a class="anchor" href="#setting-up-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up the Data</h2>
