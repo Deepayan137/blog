@@ -6,11 +6,12 @@ categories: [markdown]
 title: Building a custom OCR using pytorch
 ---
 
-# Building an OCR from scratch
+![](/blog/images/blog-2-cover.png)
 
 So in this tutorial, I will give you a basic code walkthrough for building a simple OCR. OCR as might know stands for optical character recognition or in layman terms it means text recognition. Text recognition is one of the classic problems in computer vision and is still relevant today. One of the most important applications of text recognition is the digitization of old manuscripts. Physical copies of books and manuscripts are prone to degradations. With time, the printed characters start to fade. On simple way to preserve such documents is to make a digital copy of it and store it in the cloud or local hard drive which would ensure their continuance. Similarly, text recognition can also be used for licence plate recognition and can also be used in forensics in terms of handwriting recognition. 
 
-Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. 
+Okay, now that I have given you enough motivation as to why OCR is important, let me show you how you can build one. You can find the ipython notebook as well as the other dependencies in this [repo](https://github.com/Deepayan137/Adapting-OCR). So, in case you want to run the code alongside just do a `git clone https://github.com/Deepayan137/Adapting-OCR`
+
 So first things first, I'll start with listing down some of the essential packages that you would need to build your first OCR. We will be working with PyTorch as it is one of the most efficient deep learning libraries present. The other packages are as follows:
 
 * Pytorch 1.5
@@ -135,7 +136,7 @@ class SynthCollator(object):
 Now we proceed to define our model. We use the CNN-LSTM based architecture which was proposed by Shi et.al. in their excellent paper [An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition](https://arxiv.org/pdf/1507.05717.pdf). The authors used it for scene-text recognition and showed via extensive experimentation that they were able to achieve significant gains in accuracy compared to all other existing methods at that time.
 
 
-<img src="images/crnn.png" alt="drawing" width="400"/>
+<img src="/blog/images/crnn.png" alt="drawing" width="400"/>
 
 The figure above shows the architecture used in the paper. The authors used a 7 layered Convolution network with BatchNorm and ReLU. This was followed by a stacked RNN network consisting of two Bidirectional LSTM layers. The convolution layers acted as a feature extractor while the LSTMs layers act as sequence classifiers. The LSTM layers output the probability associated with each output class at each time step
 Further details can be found in their paper and I strongly suggest you go through it for a better understanding.
@@ -552,6 +553,9 @@ learner.fit(args)
 
 ## Evaluation and testing
 
+Once, our model is trained we can evaluate its performance on the test data. I have written a separate function `get_accuracy` which takes in the trained model and the test data and performs a forward pass which gives us the logits. Once we get the logits we perform an argmax operation at each time step which we treat as our predicted class. Finally, we perform a decoding operation which converts the token ids to their respective class ids. We compare the predicted string with its corresponding ground-truth which gives us the accuracy. We do it for all the images in our test data and take the mean accuracy.
+
+We also display random 20 images from our test data with its corresponding predicted label using the Matplotlib library
 
 ```python
 import matplotlib.pyplot as plt
