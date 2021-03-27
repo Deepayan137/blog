@@ -1,8 +1,149 @@
-<h1 id="a-primer-on-unsupervised-domain-adaptation">A primer on Unsupervised Domain Adaptation</h1>
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>A primer on Unsupervised Domain Adaptation | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="A primer on Unsupervised Domain Adaptation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An introduction to popular practices in UDA." />
+<meta property="og:description" content="An introduction to popular practices in UDA." />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An introduction to popular practices in UDA.","@type":"BlogPosting","headline":"A primer on Unsupervised Domain Adaptation","dateModified":"2021-03-28T00:00:00-05:00","datePublished":"2021-03-28T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html"},"url":"https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>A primer on Unsupervised Domain Adaptation | myblog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="A primer on Unsupervised Domain Adaptation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An introduction to popular practices in UDA." />
+<meta property="og:description" content="An introduction to popular practices in UDA." />
+<link rel="canonical" href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" />
+<meta property="og:url" content="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" />
+<meta property="og:site_name" content="myblog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"An introduction to popular practices in UDA.","@type":"BlogPosting","headline":"A primer on Unsupervised Domain Adaptation","dateModified":"2021-03-28T00:00:00-05:00","datePublished":"2021-03-28T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html"},"url":"https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
 
-<p>AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.</p>
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://deepayan137.github.io/blog/feed.xml" title="myblog" />
 
-<h2 id="introduction">Introduction</h2>
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">myblog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A primer on Unsupervised Domain Adaptation</h1><p class="page-description">An introduction to popular practices in UDA.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-03-28T00:00:00-05:00" itemprop="datePublished">
+        Mar 28, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      22 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#markdown">markdown</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#introduction">Introduction</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#adversarial-domain-adaptation">Adversarial Domain adaptation</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#gradient-reversal">Gradient Reversal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#self-supervised-domain-adaptation">Self-supervised Domain Adaptation</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#rotation-flip-and-patch-prediction">Rotation, Flip and Patch prediction</a></li>
+<li class="toc-entry toc-h4"><a href="#jigsaw-puzzles">Jigsaw puzzles</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#open-set-domain-adaptation">Open Set Domain Adaptation</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#adversarial-open-set-domain-adaptation">Adversarial Open Set Domain adaptation</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#gradient-reversal-via-back-propagation">Gradient Reversal via Back-propagation</a></li>
+<li class="toc-entry toc-h4"><a href="#intuition">Intuition</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#self-supervised-open-set-domain-adaptation">Self-supervised Open set Domain Adaptation</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#neighbourhood-clustering-and-entropy-separation">Neighbourhood Clustering and Entropy Separation</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#category-agnostic-clusters-for-open-set-domain-adaptation">Category-Agnostic Clusters for Open-Set Domain Adaptation</a></li>
+<li class="toc-entry toc-h3"><a href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul><p>AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.</p>
+
+<h2 id="introduction">
+<a class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
 <p>The main reason behind a DL model’s poor generalisability is the difference in the target and source data distribution which is also known as domain shift. A workaround will be to fine-tune a pre-trained model on a target task by annotating only a small amount of the target data. However, the amount of annotated data required for finetuning depends on the task at hand. For example, sequences based tasks like Machine Translation or Speech Transcription require a lot of effort and labelling even a small portion of the dataset can take a significant amount of time and effort. Another way would be to train the model in an unsupervised manner such that it learns to focus on features that are domain invariant. Such methods fall under the umbrella of unsupervised domain adaptation (UDA) and it is something that we will discuss in much more detail in this blog post.</p>
 
@@ -10,15 +151,17 @@
 
 <p>In this blog post, we look at several unsupervised domain adaptation techniques. This post can be thought of as a mini-literature survey meant to initiate the readers on the topic of UDA. Although there can be various approaches towards solving UDA, I have focused on two of the most common techniques: (a) Adversarial (b) Self-Supervised. For both approaches, I have picked some of the most relevant papers and tried to explain them as concisely as possible.</p>
 
-<p><img src="/blog/images/domain_shift.png" style="zoom:50%;" /></p>
+<p><img src="/blog/images/domain_shift.png" style="zoom:50%;"></p>
 
 <p><em>Fig.1. shows the t-SNE visualization of CNN features for (a) before and (b) after adaptation is performed on CNN features. The Bluepoints correspond to source domain examples and the red data points refer to target examples. (Image source:</em> <a href="https://arxiv.org/pdf/1409.7495.pdf"><em>Ganin et al., 2015</em></a><em>)</em></p>
 
-<h3 id="adversarial-domain-adaptation">Adversarial Domain adaptation</h3>
+<h3 id="adversarial-domain-adaptation">
+<a class="anchor" href="#adversarial-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adversarial Domain adaptation</h3>
 
 <p>UDA aims to align the source and target features such that they are indistinguishable from the classifier. There are several possible ways one can achieve this. <a href="https://arxiv.org/abs/1607.01719">Sun and Saenko</a> minimise the first and second-order moments for the source and target data. Another way is via maximizing the mean discrepancy of target and source feature distribution proposed by <a href="https://arxiv.org/abs/1502.02791">Long and Wang</a>. However, one of the most common and intuitive ways to align source and target data distribution is via <strong>adversarial learning</strong>.</p>
 
-<h4 id="gradient-reversal">Gradient Reversal</h4>
+<h4 id="gradient-reversal">
+<a class="anchor" href="#gradient-reversal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradient Reversal</h4>
 
 <p><a href="https://arxiv.org/pdf/1409.7495.pdf">Ganin et al., 2016</a> was one of the earliest works to explore domain adaptation via adversarial learning. The underlying principle is very simple. They formulate the problem as a classification task where the classifier should be able to perform well not just on source features but also on the target features. They define a feed-forward architecture that should be able to predict not just the label of the input but also its domain label i.e. whether it belongs to the source or target category.</p>
 
@@ -42,7 +185,7 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 
 <p>The above optimization problem can be thought of as a min-max game between the feature extractor and the domain classifier. The $\theta_d$ of the domain classifier tries to minimize the domain classification loss while $\theta_f$ of the feature extractor tries to fool the domain discriminator, thereby maximizing the domain classification loss. On the other hand, since we want to learn discriminative features for both source and target samples, $\theta_f$ and $\theta_y$ seek to minimize the label prediction loss.</p>
 
-<p><img src="/blog/images/gradient_reversal_network.png" style="zoom:50%;" /></p>
+<p><img src="/blog/images/gradient_reversal_network.png" style="zoom:50%;"></p>
 
 <p><em>Fig.2. The architecture proposed by</em> <a href="https://arxiv.org/pdf/1409.7495.pdf"><em>Ganin et al. 2015</em></a><em>. The figure highlights the feature extractor, the label predictor and the domain classifier. Gradient reversal is achieved by multiplying the domain classifier gradient w.r.t with a negative constant. Gradient reversal ensures that the source and target feature distributions lie close to each other. (Image source</em> <a href="https://arxiv.org/pdf/1409.7495.pdf"><em>Ganin et al. 2015</em></a><em>)</em></p>
 
@@ -50,21 +193,23 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 
 <p>Without the gradient reversal layer, the network will behave like a traditional feed-forward network. The network will be good at predicting the class label as well as the domain labels. However, we do not want that. We want the network to predict the class labels correctly but only on features that are <strong>domain invariant</strong>. To obtain domain invariant features, the authors propose to reverse the gradients coming from the domain classifier and going into the feature extractor. Gradient reversal is achieved by multiplying $\frac{\partial L_d}{\partial \theta_f}$ with a negative constant $\lambda$. Multiplying $\frac{\partial L_d}{\partial \theta_f}$ and not $\frac{\partial L_d}{\partial \theta_d}$ with a negative constant enforces a min-max game between the feature extarctor and the domain discriminator, where the feature extractor tries to learn features which can fool the disciminator, thus maximizing the domain prediction loss.</p>
 
-<h2 id="self-supervised-domain-adaptation">Self-supervised Domain Adaptation</h2>
+<h2 id="self-supervised-domain-adaptation">
+<a class="anchor" href="#self-supervised-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Self-supervised Domain Adaptation</h2>
 
 <p>Although adversarial domain adaptation works quite well, they pose the training objective as a min-max training problem which is known to be quite difficult to solve. The training often does not converge and if it does, it converges to a bad local maximum. One also need to balance the two sets of parameters (for generator and discriminator) so that one does not dominate the other. Self-supervised domain-adaptation avoids the adversarial game altogether and seeks to align the source and target features by training a model on an auxiliary task in both domains.</p>
 
-<h4 id="rotation-flip-and-patch-prediction">Rotation, Flip and Patch prediction</h4>
+<h4 id="rotation-flip-and-patch-prediction">
+<a class="anchor" href="#rotation-flip-and-patch-prediction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rotation, Flip and Patch prediction</h4>
 
 <p>Although, one can choose a variety of auxiliary tasks such as Image colourization or image in-painting, <a href="https://arxiv.org/pdf/1909.11825.pdf">Sun e al., 2019</a> verified empirically that such pixel prediction/reconstruction task is ill-suited for domain adaptation as they induce domain separation. They showed that classification tasks which predict labels based on label structure such as <strong>Rotation prediction</strong>, <strong>Flip Prediction</strong> and <strong>Patch location prediction</strong> are more suited for domain adaptation.</p>
 
-<p><img src="/blog/images/self-supervised.png" style="zoom:33%;" /></p>
+<p><img src="/blog/images/self-supervised.png" style="zoom:33%;"></p>
 
 <p><em>Fig. 3. shows how the source and target features are aligned on a shared feature space (a) before and (b) after training the model on a single auxiliary task which subsequently leads to alignment of domains along a particular direction. (c) highlights when we train the model on multiple self-supervised tasks which further aligns the domains along with multiple directions. (Image source</em> <a href="https://arxiv.org/pdf/1909.11825.pdf"><em>Sun et al., 2019</em></a><em>)</em></p>
 
 <p>They proposed a method where in addition to the supervised classification loss on source data points $L_0$, they also had a set of $K$ self-supervised tasks, each with its separate loss function $L_k$ where $k=1\dots,K$. All the task-specific heads $h_k$ for $k=0\dots K$, share a common feature extractor $\phi$ as shown in Fig.3. where $\phi$ is a convolutional neural network and each $h_k$ is a linear layer.</p>
 
-<p><img src="/blog/images/self-supervised-DA-network.png" style="zoom:25%;" /></p>
+<p><img src="/blog/images/self-supervised-DA-network.png" style="zoom:25%;"></p>
 
 <p><em>Fig. 3. shows the architecture proposed by</em> <a href="https://arxiv.org/pdf/1909.11825.pdf"><em>Sun et al., 2019</em></a><em>. The network is trained jointly on the source and target examples. Each head corresponds to a separate task either supervised or self-supervised and has its separate loss function associated with it. All the heads share a common feature extractor, which learns to align feature distributions. (Image source</em> <a href="https://arxiv.org/pdf/1909.11825.pdf"><em>Sun et al., 2019</em></a><em>)</em></p>
 
@@ -72,27 +217,31 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mo>∑</mo><msub><mi>L</mi><mn>0</mn></msub><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">;</mo><mi>ϕ</mi><mo separator="true">,</mo><msub><mi>h</mi><mn>0</mn></msub><mo stretchy="false">)</mo><mo>+</mo><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>L</mi><mi>k</mi></msub><mo stretchy="false">(</mo><mi>S</mi><mo separator="true">,</mo><mi>T</mi><mo separator="true">;</mo><mi>ϕ</mi><mo separator="true">,</mo><msub><mi>h</mi><mi>k</mi></msub><mo stretchy="false">)</mo><mspace linebreak="newline"></mspace></mrow><annotation encoding="application/x-tex">L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)\\</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.00001em;vertical-align:-0.25001em;"></span><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">ϕ</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">h</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.2809409999999999em;vertical-align:-0.29971000000000003em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.981231em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">K</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29971000000000003em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">ϕ</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">h</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span><span class="mspace newline"></span></span></span>
 Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.</p>
 
-<h4 id="jigsaw-puzzles">Jigsaw puzzles</h4>
+<h4 id="jigsaw-puzzles">
+<a class="anchor" href="#jigsaw-puzzles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Jigsaw puzzles</h4>
 
 <p><a href="https://openaccess.thecvf.com/content_CVPR_2019/papers/Carlucci_Domain_Generalization_by_Solving_Jigsaw_Puzzles_CVPR_2019_paper.pdf">Carlucci et al., 2019</a> via a similar approach showed that domain adaptation could be achieved by when a model is trained to solve jigsaw puzzles i.e. recovering an image from its shuffled parts for both source and target examples. The authors argue that solving the jigsaw puzzle as a side objective to the real classification task act not only as a regularisation measure but also aids in feature adaptation. The overall loss function is similar to equation 4 with  being equal to</p>
 
-<h2 id="open-set-domain-adaptation">Open Set Domain Adaptation</h2>
+<h2 id="open-set-domain-adaptation">
+<a class="anchor" href="#open-set-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Open Set Domain Adaptation</h2>
 
 <p>The examples that we have seen till now belong to the <strong>closed set</strong> domain adaptation where there is a <strong>complete overlap</strong> between the source and target labels. However, in real-world applications, it will be difficult to say a priori whether our task will have the same set of labels as our source task. In many practical scenarios, our target task may have labels that are unseen in the source task. In such cases, the <strong>closed-set</strong> distribution matching algorithms will try to align the source and target domains irrespective of the fact whether the source and target domains share the same label space or not. This will cause the data samples with the “<strong>unknown</strong>” classes in the target domain to also become aligned with the “<strong>known</strong>” classes in the source domain which will deteriorate the performance of the model and lead to <strong>negative transfer</strong> (a phenomenon where an adapted model performs poorly as compared to a model which was trained exclusively on source data). Thus it becomes important to identify a boundary between the known and unknown samples and apply adaptation only on those samples which have the same classes as the source.</p>
 
-<p><img src="/blog/images/open-set-da-2.png" alt="" /></p>
+<p><img src="/blog/images/open-set-da-2.png" alt=""></p>
 
 <p><em>Fig.4. (a) Closed set domain adaptation with distribution matching algorithm. (b) Open set domain adaptation with distribution matching algorithm. The unknown classes in the target domain are aligned with the known classes of the source domain. (Image source</em> <a href="https://arxiv.org/pdf/1804.10427.pdf"><em>Saito et al., 2018</em></a><em>)</em></p>
 
-<h3 id="adversarial-open-set-domain-adaptation">Adversarial Open Set Domain adaptation</h3>
+<h3 id="adversarial-open-set-domain-adaptation">
+<a class="anchor" href="#adversarial-open-set-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adversarial Open Set Domain adaptation</h3>
 
 <p>Open set domain adaptation was proposed <a href="https://openaccess.thecvf.com/content_ICCV_2017/papers/Busto_Open_Set_Domain_ICCV_2017_paper.pdf">Busto et al., 2017</a> where the target and source domain categories do not overlap completely. The main idea behind their solution was to be able to draw a decision boundary that can differentiate between the target samples belonging to either the “known” or “unknown” class and classify correctly only the “known” class target samples. To do so, they add <strong>unknown source samples</strong> to the <strong>known source samples</strong> to learn a mapping that can classify the target samples to either one of the “known” classes or the “unknown” class. Although the algorithms do a decent job, collecting unknown source samples can be a challenging task since we must collect a diverse set of unknown samples to define what is unknown.</p>
 
-<h4 id="gradient-reversal-via-back-propagation">Gradient Reversal via Back-propagation</h4>
+<h4 id="gradient-reversal-via-back-propagation">
+<a class="anchor" href="#gradient-reversal-via-back-propagation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradient Reversal via Back-propagation</h4>
 
 <p><a href="https://arxiv.org/pdf/1804.10427.pdf">Saito et al., 2018</a> proposed a method for open set DA which involved no “unknown” source samples. Their method is similar to the one proposed by <a href="https://arxiv.org/pdf/1409.7495.pdf">Ganin et al., 2016</a> with a few tweaks to also consider the unknown target samples. Fig. 5. shows the architecture used in their paper.</p>
 
-<p><img src="/blog/images/openset-da-pipeline.png" style="zoom:75%;" /></p>
+<p><img src="/blog/images/openset-da-pipeline.png" style="zoom:75%;"></p>
 
 <p><em>Fig. 5. Network architecture proposed by <a href="https://arxiv.org/pdf/1804.10427.pdf">Saito et al., 2018</a>. The above architecture consists of a feature generator (G) and a classifier (C) which can classify a data point into K+1 (K known classes and an unknown class). The proposed method makes use of a Gradient Reversal Layer similar to the one proposed by <a href="https://arxiv.org/pdf/1409.7495.pdf">Ganin et al., 2016</a>. (Image source <a href="https://arxiv.org/pdf/1804.10427.pdf">Saito et al., 2018)</a></em></p>
 
@@ -113,17 +262,20 @@ Where $t$ is set as $0.5$.</p>
 
 <span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mi>G</mi></msub><mo>=</mo><mi>m</mi><mi>i</mi><mi>n</mi><mo stretchy="false">(</mo><msub><mi>L</mi><mi>s</mi></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mi>s</mi></msub><mo separator="true">,</mo><msub><mi>y</mi><mi>s</mi></msub><mo stretchy="false">)</mo><mo>−</mo><msub><mi>L</mi><mrow><mi>a</mi><mi>d</mi><mi>v</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mi>t</mi></msub><mo separator="true">,</mo><msub><mi>y</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">G</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight">d</span><span class="mord mathdefault mtight" style="margin-right:0.03588em;">v</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span>
 
-<h4 id="intuition">Intuition</h4>
+<h4 id="intuition">
+<a class="anchor" href="#intuition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intuition</h4>
 
 <p>But wait a minute. How does the feature extractor choose? I mean it is possible that the feature extractor mistakenly assumes that a particular “unknown” target sample belonging to the “known” class. In such a case, the feature extractor can decide to manipulate its feature vector such that the classifier outputs a probability score of less than . In such a case the unknown class target sample becomes aligned to the known source sample which will then lead to negative transfer.</p>
 
 <p>However, the authors claim that the feature extractor can <strong>recognize the distance between each target sample and the boundary between the known and the unknown class</strong>. Thus, for the target samples which are similar to the source samples, the extractor tries to align them to the known source samples and for the different ones it tries to separate them from the known class.</p>
 
-<h3 id="self-supervised-open-set-domain-adaptation">Self-supervised Open set Domain Adaptation</h3>
+<h3 id="self-supervised-open-set-domain-adaptation">
+<a class="anchor" href="#self-supervised-open-set-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Self-supervised Open set Domain Adaptation</h3>
 
 <p>Now that we have looked at adversarial open set domain adaptation, it only makes sense to look at its self-supervised counterpart. <a href="https://arxiv.org/pdf/2002.07953.pdf">Saito et al., 2020</a> took a leaf out of a prototype-based few-shot learning paradigm and propose a technique called “<strong>Neighbourhood Clustering (NC)</strong>”. In NC each target sample is either aligned to the “known” class prototype in the source or its neighbour in the target. NC encourages the target samples to be well clustered. However, we also want to know which target samples should be aligned with the source and which target samples should be rejected as “unknown”. It is always possible for a target sample belonging to a “known” class to be clustered around another target sample of the same class instead of the source prototype. Thus, in addition to NC, the authors also propose an “<strong>Entropy Separation loss</strong>” (ES) to draw a decision boundary to separate the “known” and the “unknown” class samples.</p>
 
-<h4 id="neighbourhood-clustering-and-entropy-separation">Neighbourhood Clustering and Entropy Separation</h4>
+<h4 id="neighbourhood-clustering-and-entropy-separation">
+<a class="anchor" href="#neighbourhood-clustering-and-entropy-separation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Neighbourhood Clustering and Entropy Separation</h4>
 
 <p>In NC, the authors try to minimize the entropy of a target samples’ similarity distribution to other target samples and source prototype. By doing so, the authors claim that the target sample will either move to a nearby target sample or a source prototype. 
 To do so, the authors first calculate the similarity of each target point to all the other target samples and the class prototypes for each mini-batch of target features. In the paper, the class prototypes are the weight vectors of the last fully connected layer of the network trained to classify the source data points.</p>
@@ -168,11 +320,12 @@ Here, $B_t$ refers to all target sample indices in the mini-batch.</p>
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><msub><mi>L</mi><mrow><mi>c</mi><mi>l</mi><mi>s</mi></mrow></msub><mo>+</mo><mi>λ</mi><mo stretchy="false">(</mo><msub><mi>L</mi><mrow><mi>n</mi><mi>c</mi></mrow></msub><mo>+</mo><msub><mi>L</mi><mrow><mi>e</mi><mi>s</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">L = L_{cls} + \lambda(L_{nc} + L_{es})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">c</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mord mathdefault mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">λ</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>
 where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weight parameter.</p>
 
-<h3 id="category-agnostic-clusters-for-open-set-domain-adaptation">Category-Agnostic Clusters for Open-Set Domain Adaptation</h3>
+<h3 id="category-agnostic-clusters-for-open-set-domain-adaptation">
+<a class="anchor" href="#category-agnostic-clusters-for-open-set-domain-adaptation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Category-Agnostic Clusters for Open-Set Domain Adaptation</h3>
 
 <p>Till now in open domain set domain adaptation we learn a binary classifier to classify a target sample into one of the many “known” source classes or categorize them as belonging to an “unknown” class. However, in doing so we unintentionally group the target samples into just one class, leaving their inherent data distribution unexploited. To alleviate this problem <a href="https://arxiv.org/pdf/2006.06567.pdf">Pan et al., 2020</a> proposed a method that performs clustering over all unlabelled target samples to extract to preserve the discriminative features of target samples belonging to both the known and unknown classes and at the same time being domain invariant for known class target samples. They propose a Self-Ensembling (SE) based method with category agnostic clustering (CC) to achieve this (Fig. 6.).</p>
 
-<p><img src="/blog/images/category-agnsotic.png" style="zoom:80%;" /></p>
+<p><img src="/blog/images/category-agnsotic.png" style="zoom:80%;"></p>
 
 <p><em>Fig. 6. Provides an overview of the SE-CC method. Image source <a href="https://arxiv.org/pdf/2006.06567.pdf">Pan et al., 2020</a></em></p>
 
@@ -201,7 +354,50 @@ The authors claim that by enforcing KL divergence, the learnt representations fo
 
 <p>In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations.</p>
 
-<h3 id="conclusion">Conclusion</h3>
+<h3 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h3>
 
 <p>In the above blog post, we saw several approaches towards mitigating the domain shift between the target and source dataset in an unsupervised manner. We also explored the two types of domain adaptation namely, closed-set and open-set and saw the disadvantages of applying closed-set DA strategies for open-set DA tasks. We also discussed an improvement in the traditional open-set DA setup where minimizing the divergence between the inherent cluster distribution and the predicted cluster distribution can not only help in aligning the source and target features but also help the target features retain their inherent discriminative ness. In the next post, we will domain adaptation approaches when a few of the target samples are labelled. Such techniques fall under the purview of Few-shot domain adaptation and will hopefully prove to be an interesting read.</p>
 
+
+  </div><a class="u-url" href="/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" hidden></a>
+</article>
+
+<script src="https://utteranc.es/client.js"
+        repo="deepayan137/blog"
+        issue-term="title"
+        label="comments 💬"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog for all things awesome</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/deepayan137" title="deepayan137"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/johnny_deep93" title="johnny_deep93"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
