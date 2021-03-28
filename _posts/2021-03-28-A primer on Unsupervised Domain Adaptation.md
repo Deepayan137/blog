@@ -211,7 +211,7 @@ L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p
 
 Here, $B_t$ refers to all target sample indices in the mini-batch.
 
-The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes. The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $|H(p) - \rho|$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
+The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes. The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $H(p) - \rho$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $H(p) - \rho$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
 
 \begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
@@ -241,7 +241,7 @@ where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weig
 
 ### Category-Agnostic Clusters for Open-Set Domain Adaptation
 
-Till now in open domain set domain adaptation we learn a binary classifier to classify a target sample into one of the many "known" source classes or categorize them as belonging to an "unknown" class. However, in doing so we unintentionally group the target samples into just one class, leaving their inherent data distribution unexploited. To alleviate this problem [Pan et al., 2020](https://arxiv.org/pdf/2006.06567.pdf) proposed a method that performs clustering over all unlabelled target samples to extract to preserve the discriminative features of target samples belonging to both the known and unknown classes and at the same time being domain invariant for known class target samples. They propose a Self-Ensembling (SE) based method with category agnostic clustering (CC) to achieve this (Fig. 6.).
+Till now in open domain set domain adaptation we learn a binary classifier to classify a target sample into one of the many "known" source classes or categorize them as belonging to an "unknown" class. However, **in doing so we unintentionally group the target samples into just one class**, leaving their inherent data distribution unexploited. To alleviate this problem [Pan et al., 2020](https://arxiv.org/pdf/2006.06567.pdf) proposed a method that performs clustering over all unlabelled target samples to extract to preserve the discriminative features of target samples belonging to both the known and unknown classes and at the same time being domain invariant for known class target samples. They propose a Self-Ensembling (SE) based method with category agnostic clustering (CC) to achieve this (Fig. 6.).
 
 <img src="/blog/images/category-agnsotic.png" style="zoom:80%;" />
 
@@ -266,9 +266,9 @@ L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 
 **Category Agnostic Clustering**
 
-To not group all the unknown target samples in just one class, the authors introduce a clustering branch in the student model to align its estimated cluster assignment distribution with the inherent cluster distribution among the category-agnostic clusters.
+To not group all the unknown target samples in just one class, the authors introduce a clustering branch in the student model to align its **estimated** cluster assignment distribution with the **inherent** cluster distribution among the category-agnostic clusters. We will go over what they mean by the inherent and estimated cluster distribution briefly.
 
-The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
+The authors perform K-means clustering over the target features. The clusters so obtained reveal the underlying data distribution in the target domain i.e. its **inherent** cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
 
 
 \begin{equation}
@@ -279,7 +279,7 @@ The authors perform K-means clustering over the target features. Although, the c
 
 **Clustering Branch**
 
-The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature's cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
+The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature's **estimated** cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
 
 \begin{equation}
 	P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
@@ -293,9 +293,9 @@ To measure the similarity between the estimated cluster assignment from the clus
 	L_{KL} = \sum_{x_t \in T} KL(\hat{P_{clu}(x_t)}||P_{clu}(x_t^S))
 \end{equation}
 
-The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. 
+The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations. With the above formulation, the authors achieve the best results on open-set DA tasks.
 
-In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations. 
+For more details, please refer to their paper mentioned in the link.
 
 
 
