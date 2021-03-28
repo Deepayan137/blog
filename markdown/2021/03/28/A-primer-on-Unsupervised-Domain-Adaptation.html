@@ -339,7 +339,7 @@ L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p
 
 <p>Here, $B_t$ refers to all target sample indices in the mini-batch.</p>
 
-<p>The authors make use of the entropy of the classifier’s output to separate the known from the unknown target samples. The intuition behind this is that “unknown” target samples are likely to have higher entropy since they do not share any common features with the “known” source classes. The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $H(p) - \rho$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $H(p) - \rho$ is sufficiently large, the network is cofident about a target sample belonging to “known” or “unknown” class.</p>
+<p>The authors make use of the entropy of the classifier’s output to separate the known from the unknown target samples. The intuition behind this is that “unknown” target samples are likely to have higher entropy since they do not share any common features with the “known” source classes. The authors define a threshold boundry $\gamma$ and try to maximize the distance between the entropy and the threshold which is defined as $H(p) - \gamma$. They assume $\gamma = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $H(p) - \gamma$ is sufficiently large, the network is cofident about a target sample belonging to “known” or “unknown” class.</p>
 
 <p>\begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
@@ -347,7 +347,7 @@ L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
 
 <p>\begin{equation}
 L_{es}(p_i) = \begin{cases} 
-      -|H(p_i) - \rho| &amp; |H(p_i) - \rho|&gt; m <br>
+      -|H(p_i) - \gamma| &amp; |H(p_i) - \gamma|&gt; m <br>
       0 &amp; otherwise
    \end{cases}
 \end{equation}</p>
@@ -390,7 +390,7 @@ L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 <p>The authors perform K-means clustering over the target features. The clusters so obtained reveal the underlying data distribution in the target domain i.e. its <strong>inherent</strong> cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.</p>
 
 <p>\begin{equation}
-	\overline{P_{clu}(x_t)}= \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+	\overline{P_{clu}(x_t)}= \frac{e^{\gamma . cos(x_t, \mu_k)}}{\sum_{k}e^{\gamma . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
 \end{equation}</p>
 
 <p><strong>Clustering Branch</strong></p>
@@ -398,7 +398,7 @@ L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 <p>The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s <strong>estimated</strong> cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.</p>
 
 <p>\begin{equation}
-	P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+	P_{clu}^k(x_t^S) = \frac{e^{\gamma . cos(x_t^S, W_k)}}{\sum_{k}e^{\gamma . cos{x_t^S, W_k}}}
 \end{equation}</p>
 
 <p>Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.</p>
