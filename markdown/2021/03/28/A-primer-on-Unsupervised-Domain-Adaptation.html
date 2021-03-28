@@ -240,12 +240,13 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 
 <p><em>Fig. 3. shows the architecture proposed by</em> <a href="https://arxiv.org/pdf/1909.11825.pdf"><em>Sun et al., 2019</em></a><em>. The network is trained jointly on the source and target examples. Each head corresponds to a separate task either supervised or self-supervised and has its separate loss function associated with it. All the heads share a common feature extractor, which learns to align feature distributions. (Image source</em> <a href="https://arxiv.org/pdf/1909.11825.pdf"><em>Sun et al., 2019</em></a><em>)</em></p>
 
-<p>So if $S = {(x_i, y_i), i=1\dots m}$ is the labeled source data and $T = {(x_i), i = 1 \dots n}$ is the unlabelled target data then the overall loss function can be written as:
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L = \sum L_0(S…" style="color:#cc0000">\begin{equation}
-L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)\\
-\end{equation}</span>
-Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.</p>
+<p>So if $S = {(x_i, y_i), i=1\dots m}$ is the labeled source data and $T = {(x_i), i = 1 \dots n}$ is the unlabelled target data then the overall loss function can be written as:</p>
+
+<p>\begin{equation}
+L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)<br>
+\end{equation}</p>
+
+<p>Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.</p>
 
 <h4 id="jigsaw-puzzles">
 <a class="anchor" href="#jigsaw-puzzles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Jigsaw puzzles</h4>
@@ -397,41 +398,45 @@ where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weig
 
 <p><strong>Self-Ensembling</strong></p>
 
-<p>SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{se} = ||P_{…" style="color:#cc0000">\begin{equation}
-L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||_2^2
-\end{equation}</span>
-During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{SEC} = \sum…" style="color:#cc0000">\begin{equation}
+<p>SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.</p>
+
+<p>\begin{equation}
+L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
+\end{equation}</p>
+
+<p>During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes</p>
+
+<p>\begin{equation}
 L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
-\end{equation}</span>
-<strong>Category Agnostic Clustering</strong></p>
+\end{equation}</p>
+
+<p><strong>Category Agnostic Clustering</strong></p>
 
 <p>To not group all the unknown target samples in just one class, the authors introduce a clustering branch in the student model to align its estimated cluster assignment distribution with the inherent cluster distribution among the category-agnostic clusters.</p>
 
-<p>The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-\hat{P}_{clu}(…" style="color:#cc0000">\begin{equation}
-\hat{P}_{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
-\end{equation}</span></p>
+<p>The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.</p>
+
+<p>\begin{equation}
+\hat{P}<em>{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum</em>{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+\end{equation}</p>
 
 <p><strong>Clustering Branch</strong></p>
 
-<p>The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-P_{clu}^k(x_t^…" style="color:#cc0000">\begin{equation}
-P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
-\end{equation}</span>
-Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.</p>
+<p>The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.</p>
 
-<p>To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
-<span class="katex-error" title="ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{KL} = \sum_…" style="color:#cc0000">\begin{equation}
-L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
-\end{equation}</span>
-The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness.</p>
+<p>\begin{equation}
+P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+\end{equation}</p>
+
+<p>Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.</p>
+
+<p>To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss.</p>
+
+<p>\begin{equation}
+L_{KL} = \sum_{x_t \in T} KL(\hat{P}<em>{clu}(x_t)||P</em>{clu}(x_t^S))
+\end{equation}</p>
+
+<p>The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness.</p>
 
 <p>In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations.</p>
 

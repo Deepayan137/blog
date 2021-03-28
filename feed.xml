@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T01:30:29-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on Unsupervised Domain Adaptation</title><link href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on Unsupervised Domain Adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/markdown/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;p&gt;AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T01:36:35-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on Unsupervised Domain Adaptation</title><link href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on Unsupervised Domain Adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/markdown/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;p&gt;AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.&lt;/p&gt;
 
 &lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
@@ -74,12 +74,13 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 
 &lt;p&gt;&lt;em&gt;Fig. 3. shows the architecture proposed by&lt;/em&gt; &lt;a href=&quot;https://arxiv.org/pdf/1909.11825.pdf&quot;&gt;&lt;em&gt;Sun et al., 2019&lt;/em&gt;&lt;/a&gt;&lt;em&gt;. The network is trained jointly on the source and target examples. Each head corresponds to a separate task either supervised or self-supervised and has its separate loss function associated with it. All the heads share a common feature extractor, which learns to align feature distributions. (Image source&lt;/em&gt; &lt;a href=&quot;https://arxiv.org/pdf/1909.11825.pdf&quot;&gt;&lt;em&gt;Sun et al., 2019&lt;/em&gt;&lt;/a&gt;&lt;em&gt;)&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;So if $S = {(x_i, y_i), i=1\dots m}$ is the labeled source data and $T = {(x_i), i = 1 \dots n}$ is the unlabelled target data then the overall loss function can be written as:
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L = \sum L_0(S…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)\\
-\end{equation}&lt;/span&gt;
-Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.&lt;/p&gt;
+&lt;p&gt;So if $S = {(x_i, y_i), i=1\dots m}$ is the labeled source data and $T = {(x_i), i = 1 \dots n}$ is the unlabelled target data then the overall loss function can be written as:&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)&lt;br /&gt;
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.&lt;/p&gt;
 
 &lt;h4 id=&quot;jigsaw-puzzles&quot;&gt;Jigsaw puzzles&lt;/h4&gt;
 
@@ -223,41 +224,45 @@ where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weig
 
 &lt;p&gt;&lt;strong&gt;Self-Ensembling&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{se} = ||P_{…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||_2^2
-\end{equation}&lt;/span&gt;
-During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{SEC} = \sum…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
-\end{equation}&lt;/span&gt;
-&lt;strong&gt;Category Agnostic Clustering&lt;/strong&gt;&lt;/p&gt;
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Category Agnostic Clustering&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;To not group all the unknown target samples in just one class, the authors introduce a clustering branch in the student model to align its estimated cluster assignment distribution with the inherent cluster distribution among the category-agnostic clusters.&lt;/p&gt;
 
-&lt;p&gt;The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-\hat{P}_{clu}(…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-\hat{P}_{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+\hat{P}&lt;em&gt;{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum&lt;/em&gt;{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+\end{equation}&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Clustering Branch&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-P_{clu}^k(x_t^…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
-\end{equation}&lt;/span&gt;
-Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.&lt;/p&gt;
+&lt;p&gt;The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.&lt;/p&gt;
 
-&lt;p&gt;To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{KL} = \sum_…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
-\end{equation}&lt;/span&gt;
-The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness.&lt;/p&gt;
+&lt;p&gt;\begin{equation}
+P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.&lt;/p&gt;
+
+&lt;p&gt;To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+L_{KL} = \sum_{x_t \in T} KL(\hat{P}&lt;em&gt;{clu}(x_t)||P&lt;/em&gt;{clu}(x_t^S))
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness.&lt;/p&gt;
 
 &lt;p&gt;In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations.&lt;/p&gt;
 
