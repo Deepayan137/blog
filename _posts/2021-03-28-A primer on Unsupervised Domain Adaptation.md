@@ -6,7 +6,8 @@ categories: [markdown]
 title:  A primer on Unsupervised Domain Adaptation
 coments: true
 use_math: true
----
+# A primer on Unsupervised Domain Adaptation
+
 AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming. 
 
 ## Introduction
@@ -41,19 +42,25 @@ They decompose such a mapping into three parts (refer Fig.2.):
 
 Like any feedforward network, they optimise the feature extractor and label predictor to minimize the label prediction loss on source labels. At the same time, they want both the source and target feature distributions to be close to each other so that accuracy on the target domain remains same as the accuarcy on the source domain. To learn domain invariant features, during training time, the authors pose the optimization problem such that $\theta_f$ seeks to maximize the loss of the domain classifier, while $\theta_d$ of the domain classifier tries to minimize the loss of the domain classifier.
 $$
+\begin{equation}
 \begin{array}{l}
 E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{f}, \theta_{y}\right)-\lambda \sum_{i=1}^{N} L_{d}\left(\theta_{f}, \theta_{d})\right.
 \end{array}
+\end{equation}
 $$
 
 
 Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.
 $$
+\begin{equation}
 (\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
+\end{equation}
 $$
 
 $$
+\begin{equation}
 \theta_d = arg\ max E(\theta_f, \theta_y, \theta_d)
+\end{equation}
 $$
 
 The above optimization problem can be thought of as a min-max game between the feature extractor and the domain classifier. The $\theta_d$ of the domain classifier tries to minimize the domain classification loss while $\theta_f$ of the feature extractor tries to fool the domain discriminator, thereby maximizing the domain classification loss. On the other hand, since we want to learn discriminative features for both source and target samples, $\theta_f$ and $\theta_y$ seek to minimize the label prediction loss. 
@@ -90,7 +97,9 @@ They proposed a method where in addition to the supervised classification loss o
 
 So if $S = \{(x_i, y_i), i=1\dots m\}$ is the labeled source data and $T = \{(x_i), i = 1 \dots n\}$ is the unlabelled target data then the overall loss function can be written as:
 $$
+\begin{equation}
 L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)\\
+\end{equation}
 $$
 Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.
 
@@ -126,21 +135,29 @@ To combat the above situation, the authors propose that the classifier should ou
 
 Equation 5 refers to the cross-entropy loss used to train the model to identify the source data into one of the known classes.
 $$
+\begin{equation}
 L_s(x_s, y_s) = -log(p(y = y_s|x_s))
+\end{equation}
 $$
 For training a classifier to learn a decision boundry seperating the known and unknown classes, the authors propose binary cross-entropy loss.
 $$
+\begin{equation}
 L_{adv}(x_t) = -tlog(p(y = K + 1|x_t)) - (1 - t)log(1 - p(y = K + 1|x_t))\\
+\end{equation}
 $$
 Where $t$ is set as $0.5$.
 
 The overall training objective becomes
 $$
+\begin{equation}
 L_C = min(L_s(x_s, y_s) + L_{adv}(x_t, y_t)
+\end{equation}
 $$
 
 $$
+\begin{equation}
 L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
+\end{equation}
 $$
 
 
@@ -162,27 +179,37 @@ To do so, the authors first calculate the similarity of each target point to all
 
 Thus, if $N_t$ denotes the number of target examples and K denotes the number of classes, then $V \in R^{N_t \times d}$ denotes the memory bank containing all the target features and $F \in R^{(N_t + K) \times d}$ denotes all the feature vectors in the memory bank and the prototype vectors where $d$ is the dimension of last linear layer.
 $$
+\begin{equation}
 V = [V_1, V_2 \dots V_{N_t}]
+\end{equation}
 $$
 
 $$
+\begin{equation}
 F = [V_1, V_2, \dots V_{N_t}, w_1, w2 \dots w_k]
+\end{equation}
 $$
 
 Since the authors calculate the similarity of feature vectors at a mini-batch level, they employ $V$ to store the features which are not present in the mini-batch. Let $f_i$ denote the features in the mini-batch and $F_j$ denote the $j$-th term in $F$, then the similarity matrix for all the features in the mini-batch can be obtained by:
 $$
+\begin{equation}
 p_{i,j} = \frac{exp(F_j^T f_i/\tau)}{Z_i}
+\end{equation}
 $$
 
 $$
+\begin{equation}
 Z_i = \sum_{j=1, j \ne i}^{N_t + K} exp(F_{j}^T f_i/\tau)
+\end{equation}
 $$
 
 where, $\tau$ is the temperature parameter, which controls the number of neighbours for each sample.
 
 The entropy is then calculated by 
 $$
+\begin{equation}
 L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p_{i,j})
+\end{equation}
 $$
 Here, $B_t$ refers to all target sample indices in the mini-batch.
 
@@ -192,14 +219,18 @@ The authors make use of the entropy of the classifier's output to separate the k
 
 The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes.
 $$
+\begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
+\end{equation}
 $$
 
 $$
+\begin{equation}
 L_{es}(p_i) = \begin{cases} 
       -|H(p_i) - \rho| & |H(p_i) - \rho|> m \\
       0 & otherwise
    \end{cases}
+\end{equation}
 $$
 
 confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $|H(p) - \rho|$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
@@ -208,7 +239,9 @@ confidence parameter $m$ allows seperation loss only for the confident samples. 
 
 The final loss function then becomes 
 $$
+\begin{equation}
 L = L_{cls} + \lambda(L_{nc} + L_{es})
+\end{equation}
 $$
 where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weight parameter.
 
@@ -228,11 +261,15 @@ Till now in open domain set domain adaptation we learn a binary classifier to cl
 
 SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.
 $$
+\begin{equation}
 L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||_2^2
+\end{equation}
 $$
 During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes
 $$
+\begin{equation}
 L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
+\end{equation}
 $$
 **Category Agnostic Clustering**
 
@@ -240,7 +277,9 @@ To not group all the unknown target samples in just one class, the authors intro
 
 The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
 $$
+\begin{equation}
 \hat{P}_{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+\end{equation}
 $$
 
 
@@ -248,13 +287,17 @@ $$
 
 The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature's cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
 $$
+\begin{equation}
 P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+\end{equation}
 $$
 Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.
 
 To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
 $$
+\begin{equation}
 L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
+\end{equation}
 $$
 The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. 
 
