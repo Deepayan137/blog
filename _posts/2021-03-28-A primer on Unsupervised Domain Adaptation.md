@@ -134,31 +134,30 @@ However, there is a small catch in this. In the traditional sense, if we were to
 To combat the above situation, the authors propose that the classifier should output a probability  instead of 1, where . The generator can choose to either increase or decrease the value of the output probability of an unknown sample and thereby maximize the classifier error. Now, this has two implications. If the generator chooses to decrease output probability lower than , then it essentially means that the target sample is aligned with the source class. Similarly, if output probability is increase to a value greater than , then it means that the sample must be rejected.
 
 Equation 5 refers to the cross-entropy loss used to train the model to identify the source data into one of the known classes.
-$$
+
 \begin{equation}
-L_s(x_s, y_s) = -log(p(y = y_s|x_s))
+	L_s(x_s, y_s) = -log(p(y = y_s|x_s))
 \end{equation}
-$$
+
 For training a classifier to learn a decision boundry seperating the known and unknown classes, the authors propose binary cross-entropy loss.
-$$
+
+
 \begin{equation}
-L_{adv}(x_t) = -tlog(p(y = K + 1|x_t)) - (1 - t)log(1 - p(y = K + 1|x_t))\\
+	L_{adv}(x_t) = -tlog(p(y = K + 1|x_t)) - (1 - t)log(1 - p(y = K + 1|x_t))\\
 \end{equation}
-$$
+
 Where $t$ is set as $0.5$.
 
 The overall training objective becomes
-$$
-\begin{equation}
-L_C = min(L_s(x_s, y_s) + L_{adv}(x_t, y_t)
-\end{equation}
-$$
 
-$$
 \begin{equation}
-L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
+	L_C = min(L_s(x_s, y_s) + L_{adv}(x_t, y_t)
 \end{equation}
-$$
+
+\begin{equation}
+	L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
+\end{equation}
+
 
 
 
@@ -178,39 +177,38 @@ In NC, the authors try to minimize the entropy of a target samples' similarity d
 To do so, the authors first calculate the similarity of each target point to all the other target samples and the class prototypes for each mini-batch of target features. In the paper, the class prototypes are the weight vectors of the last fully connected layer of the network trained to classify the source data points. 
 
 Thus, if $N_t$ denotes the number of target examples and K denotes the number of classes, then $V \in R^{N_t \times d}$ denotes the memory bank containing all the target features and $F \in R^{(N_t + K) \times d}$ denotes all the feature vectors in the memory bank and the prototype vectors where $d$ is the dimension of last linear layer.
-$$
+
 \begin{equation}
 V = [V_1, V_2 \dots V_{N_t}]
 \end{equation}
-$$
 
-$$
 \begin{equation}
 F = [V_1, V_2, \dots V_{N_t}, w_1, w2 \dots w_k]
 \end{equation}
-$$
+
 
 Since the authors calculate the similarity of feature vectors at a mini-batch level, they employ $V$ to store the features which are not present in the mini-batch. Let $f_i$ denote the features in the mini-batch and $F_j$ denote the $j$-th term in $F$, then the similarity matrix for all the features in the mini-batch can be obtained by:
-$$
+
+
 \begin{equation}
 p_{i,j} = \frac{exp(F_j^T f_i/\tau)}{Z_i}
 \end{equation}
-$$
 
-$$
+
+
 \begin{equation}
 Z_i = \sum_{j=1, j \ne i}^{N_t + K} exp(F_{j}^T f_i/\tau)
 \end{equation}
-$$
+
 
 where, $\tau$ is the temperature parameter, which controls the number of neighbours for each sample.
 
 The entropy is then calculated by 
-$$
+
 \begin{equation}
 L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p_{i,j})
 \end{equation}
-$$
+
 Here, $B_t$ refers to all target sample indices in the mini-batch.
 
 
@@ -218,31 +216,29 @@ Here, $B_t$ refers to all target sample indices in the mini-batch.
 The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes.
 
 The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes.
-$$
+
 \begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
 \end{equation}
-$$
 
-$$
 \begin{equation}
 L_{es}(p_i) = \begin{cases} 
       -|H(p_i) - \rho| & |H(p_i) - \rho|> m \\
       0 & otherwise
    \end{cases}
 \end{equation}
-$$
+
 
 confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $|H(p) - \rho|$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
 
 
 
 The final loss function then becomes 
-$$
+
 \begin{equation}
-L = L_{cls} + \lambda(L_{nc} + L_{es})
+	L = L_{cls} + \lambda(L_{nc} + L_{es})
 \end{equation}
-$$
+
 where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weight parameter.
 
 
@@ -262,7 +258,7 @@ Till now in open domain set domain adaptation we learn a binary classifier to cl
 SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.
 
 \begin{equation}
-L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
+L_{SE} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
 \end{equation}
 
 
@@ -280,7 +276,7 @@ The authors perform K-means clustering over the target features. Although, the c
 
 
 \begin{equation}
-\hat{P}_{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+	\overline{P_{clu}(x_t)}= \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
 \end{equation}
 
 
@@ -290,7 +286,7 @@ The authors perform K-means clustering over the target features. Although, the c
 The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature's cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
 
 \begin{equation}
-P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+	P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
 \end{equation}
 
 Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.
@@ -298,7 +294,7 @@ Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k
 To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
 
 \begin{equation}
-L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
+	L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
 \end{equation}
 
 The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. 
