@@ -41,27 +41,26 @@ They decompose such a mapping into three parts (refer Fig.2.):
 3. $G_d$ with parameters $\theta_d$, which maps the same feature vector $f$ to the domain label $d$.
 
 Like any feedforward network, they optimise the feature extractor and label predictor to minimize the label prediction loss on source labels. At the same time, they want both the source and target feature distributions to be close to each other so that accuracy on the target domain remains same as the accuarcy on the source domain. To learn domain invariant features, during training time, the authors pose the optimization problem such that $\theta_f$ seeks to maximize the loss of the domain classifier, while $\theta_d$ of the domain classifier tries to minimize the loss of the domain classifier.
-$$
+
 \begin{equation}
 \begin{array}{l}
 E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{f}, \theta_{y}\right)-\lambda \sum_{i=1}^{N} L_{d}\left(\theta_{f}, \theta_{d})\right.
 \end{array}
 \end{equation}
-$$
+
 
 
 Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.
-$$
+
 \begin{equation}
 (\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
 \end{equation}
-$$
 
-$$
+
+
 \begin{equation}
 \theta_d = arg\ max E(\theta_f, \theta_y, \theta_d)
 \end{equation}
-$$
 
 The above optimization problem can be thought of as a min-max game between the feature extractor and the domain classifier. The $\theta_d$ of the domain classifier tries to minimize the domain classification loss while $\theta_f$ of the feature extractor tries to fool the domain discriminator, thereby maximizing the domain classification loss. On the other hand, since we want to learn discriminative features for both source and target samples, $\theta_f$ and $\theta_y$ seek to minimize the label prediction loss. 
 
