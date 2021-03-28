@@ -54,13 +54,13 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.
 
 \begin{equation}
-(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
+	(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
 \end{equation}
 
 
 
 \begin{equation}
-\theta_d = arg\ max E(\theta_f, \theta_y, \theta_d)
+	\theta_d = arg\ max E(\theta_f, \theta_y, \theta_d)
 \end{equation}
 
 The above optimization problem can be thought of as a min-max game between the feature extractor and the domain classifier. The $\theta_d$ of the domain classifier tries to minimize the domain classification loss while $\theta_f$ of the feature extractor tries to fool the domain discriminator, thereby maximizing the domain classification loss. On the other hand, since we want to learn discriminative features for both source and target samples, $\theta_f$ and $\theta_y$ seek to minimize the label prediction loss. 
@@ -294,7 +294,7 @@ Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k
 To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
 
 \begin{equation}
-	L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
+	L_{KL} = \sum_{x_t \in T} KL(\hat{P_{clu}(x_t)}||P_{clu}(x_t^S))
 \end{equation}
 
 The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. 
