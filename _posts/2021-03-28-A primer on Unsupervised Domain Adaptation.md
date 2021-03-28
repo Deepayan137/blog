@@ -211,7 +211,9 @@ L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p
 
 Here, $B_t$ refers to all target sample indices in the mini-batch.
 
-The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes. The authors define a threshold boundry $\gamma$ and try to maximize the distance between the entropy and the threshold which is defined as $H(p) - \gamma$. They assume $\gamma = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $H(p) - \gamma$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
+The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes. 
+
+The authors define a threshold boundry $\gamma$ and try to maximize the distance between the entropy and the threshold which is defined as $H(p) - \gamma$. They assume $\gamma = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. 
 
 \begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
@@ -224,6 +226,7 @@ L_{es}(p_i) = \begin{cases}
    \end{cases}
 \end{equation}
 
+The confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $H(p) - \gamma$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
 
 
 
