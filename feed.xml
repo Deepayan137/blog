@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T01:12:03-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on unsupervised domain adaptation</title><link href="https://deepayan137.github.io/blog/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on unsupervised domain adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;hr /&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T01:15:47-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on unsupervised domain adaptation</title><link href="https://deepayan137.github.io/blog/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on unsupervised domain adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;hr /&gt;
 &lt;p&gt;toc: true
 layout: post
 description: An introduction to popular practices in UDA.
@@ -38,24 +38,23 @@ use_math: true&lt;/p&gt;
   &lt;li&gt;$G_d$ with parameters $\theta_d$, which maps the same feature vector $f$ to the domain label $d$.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;Like any feedforward network, they optimise the feature extractor and label predictor to minimize the label prediction loss on source labels. At the same time, they want both the source and target feature distributions to be close to each other so that accuracy on the target domain remains same as the accuarcy on the source domain. To learn domain invariant features, during training time, the authors pose the optimization problem such that $\theta_f$ seeks to maximize the loss of the domain classifier, while $\theta_d$ of the domain classifier tries to minimize the loss of the domain classifier.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-\begin{array}{…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;Like any feedforward network, they optimise the feature extractor and label predictor to minimize the label prediction loss on source labels. At the same time, they want both the source and target feature distributions to be close to each other so that accuracy on the target domain remains same as the accuarcy on the source domain. To learn domain invariant features, during training time, the authors pose the optimization problem such that $\theta_f$ seeks to maximize the loss of the domain classifier, while $\theta_d$ of the domain classifier tries to minimize the loss of the domain classifier.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 \begin{array}{l}
 E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{f}, \theta_{y}\right)-\lambda \sum_{i=1}^{N} L_{d}\left(\theta_{f}, \theta_{d})\right.
 \end{array}
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+\end{equation}&lt;/p&gt;
 
-&lt;p&gt;Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-(\theta_f, \th…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.&lt;/p&gt;
 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-\theta_d = arg…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;\begin{equation}
+(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)&lt;br /&gt;
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 \theta_d = arg\ max E(\theta_f, \theta_y, \theta_d)
-\end{equation}&lt;/span&gt;
+\end{equation}&lt;/p&gt;
 
 &lt;p&gt;The above optimization problem can be thought of as a min-max game between the feature extractor and the domain classifier. The $\theta_d$ of the domain classifier tries to minimize the domain classification loss while $\theta_f$ of the feature extractor tries to fool the domain discriminator, thereby maximizing the domain classification loss. On the other hand, since we want to learn discriminative features for both source and target samples, $\theta_f$ and $\theta_y$ seek to minimize the label prediction loss.&lt;/p&gt;
 
