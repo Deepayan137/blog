@@ -6,6 +6,7 @@ categories: [markdown]
 title:  A primer on Unsupervised Domain Adaptation
 coments: true
 use_math: true
+---
 
 
 AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming. 
