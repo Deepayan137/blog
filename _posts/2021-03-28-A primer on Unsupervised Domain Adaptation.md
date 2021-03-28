@@ -126,11 +126,11 @@ Open set domain adaptation was proposed [Busto et al., 2017](https://openaccess.
 
 *Fig. 5. Network architecture proposed by [Saito et al., 2018](https://arxiv.org/pdf/1804.10427.pdf). The above architecture consists of a feature generator (G) and a classifier (C) which can classify a data point into K+1 (K known classes and an unknown class). The proposed method makes use of a Gradient Reversal Layer similar to the one proposed by [Ganin et al., 2016](https://arxiv.org/pdf/1409.7495.pdf). (Image source [Saito et al., 2018)](https://arxiv.org/pdf/1804.10427.pdf)*
 
-The main objective as mentioned earlier is to correctly classify the "known" target samples and differentiate the "unknown" target from class samples from the "known". To achieve this, one needs to create a decision boundary that can correctly separate the "unknown from the known samples. However, since there is no label information for the target samples, the authors propose to come up with a pseudo decision boundary by training the classifier to classify all the target samples as belonging to the "unknown" class. The role of the feature generator would then be to fool the classifier into believing that the target samples comes from the source domain.* 
+The main objective as mentioned earlier is to correctly classify the "known" target samples and differentiate the "unknown" target from class samples from the "known". To achieve this, one needs to create a decision boundary that can correctly separate the "unknown from the known samples. However, since there is no label information for the target samples, the authors propose to come up with a pseudo decision boundary by training the classifier to classify all the target samples as belonging to the "unknown" class. **The role of the feature generator would then be to fool the classifier into believing that the target samples comes from the source domain.**
 
-However, there is a small catch in this. In the traditional sense, if we were to train a classifier to classify the target sample as unknown, then it would be as good as saying that we want the output probability of the target sample to be . In such a case, for the generator to deceive the classifier, it should align the target samples completely with the source samples. The generator will try to decrease the probability for the unknown class which will ultimately lead to negative transfer.
+However, there is a small catch in this. In the traditional sense, if we were to train a classifier to classify the target sample as unknown, then it would be as good as saying that we want the output probability of the target sample to be $p(x_t) = 1$. In such a case, for the generator to deceive the classifier, it should align the target samples completely with the source samples. The generator will try to decrease the probability for the unknown class which will ultimately lead to negative transfer.
 
-To combat the above situation, the authors propose that the classifier should output a probability  instead of 1, where . The generator can choose to either increase or decrease the value of the output probability of an unknown sample and thereby maximize the classifier error. Now, this has two implications. If the generator chooses to decrease output probability lower than , then it essentially means that the target sample is aligned with the source class. Similarly, if output probability is increase to a value greater than , then it means that the sample must be rejected.
+To combat the above situation, the authors propose that the classifier should output a probability $t$ instead of 1, where $0 < t < 1 $. The generator can choose to either increase or decrease the value of the output probability of an unknown sample and thereby maximize the classifier error. Now, this has two implications. If the generator chooses to decrease output probability lower than , then it essentially means that the target sample is aligned with the source class. Similarly, if output probability is increase to a value greater than , then it means that the sample must be rejected.
 
 Equation 5 refers to the cross-entropy loss used to train the model to identify the source data into one of the known classes.
 
@@ -173,6 +173,7 @@ Now that we have looked at adversarial open set domain adaptation, it only makes
 #### Neighbourhood Clustering and Entropy Separation
 
 In NC, the authors try to minimize the entropy of a target samples' similarity distribution to other target samples and source prototype. By doing so, the authors claim that the target sample will either move to a nearby target sample or a source prototype. 
+
 To do so, the authors first calculate the similarity of each target point to all the other target samples and the class prototypes for each mini-batch of target features. In the paper, the class prototypes are the weight vectors of the last fully connected layer of the network trained to classify the source data points. 
 
 Thus, if $N_t$ denotes the number of target examples and K denotes the number of classes, then $V \in R^{N_t \times d}$ denotes the memory bank containing all the target features and $F \in R^{(N_t + K) \times d}$ denotes all the feature vectors in the memory bank and the prototype vectors where $d$ is the dimension of last linear layer.
@@ -210,11 +211,7 @@ L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p
 
 Here, $B_t$ refers to all target sample indices in the mini-batch.
 
-
-
-The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes.
-
-The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes.
+The authors make use of the entropy of the classifier's output to separate the known from the unknown target samples. The intuition behind this is that "unknown" target samples are likely to have higher entropy since they do not share any common features with the "known" source classes. The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes. confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $|H(p) - \rho|$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
 
 \begin{equation}
 L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
@@ -228,7 +225,7 @@ L_{es}(p_i) = \begin{cases}
 \end{equation}
 
 
-confidence parameter $m$ allows seperation loss only for the confident samples. Thus when $|H(p) - \rho|$ is sufficiently large, the network is cofident about a target sample belonging to "known" or "unknown" class.
+
 
 
 
