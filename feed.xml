@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T01:36:35-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on Unsupervised Domain Adaptation</title><link href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on Unsupervised Domain Adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/markdown/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;p&gt;AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://deepayan137.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://deepayan137.github.io/blog/" rel="alternate" type="text/html" /><updated>2021-03-28T02:01:53-05:00</updated><id>https://deepayan137.github.io/blog/feed.xml</id><title type="html">myblog</title><subtitle>A blog for all things awesome</subtitle><entry><title type="html">A primer on Unsupervised Domain Adaptation</title><link href="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html" rel="alternate" type="text/html" title="A primer on Unsupervised Domain Adaptation" /><published>2021-03-28T00:00:00-05:00</published><updated>2021-03-28T00:00:00-05:00</updated><id>https://deepayan137.github.io/blog/markdown/2021/03/28/A%20primer%20on%20Unsupervised%20Domain%20Adaptation</id><content type="html" xml:base="https://deepayan137.github.io/blog/markdown/2021/03/28/A-primer-on-Unsupervised-Domain-Adaptation.html">&lt;p&gt;AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming.&lt;/p&gt;
 
 &lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 
@@ -112,28 +112,29 @@ L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)&lt;br /&gt;
 
 &lt;p&gt;To combat the above situation, the authors propose that the classifier should output a probability  instead of 1, where . The generator can choose to either increase or decrease the value of the output probability of an unknown sample and thereby maximize the classifier error. Now, this has two implications. If the generator chooses to decrease output probability lower than , then it essentially means that the target sample is aligned with the source class. Similarly, if output probability is increase to a value greater than , then it means that the sample must be rejected.&lt;/p&gt;
 
-&lt;p&gt;Equation 5 refers to the cross-entropy loss used to train the model to identify the source data into one of the known classes.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_s(x_s, y_s) …&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_s(x_s, y_s) = -log(p(y = y_s|x_s))
-\end{equation}&lt;/span&gt;
-For training a classifier to learn a decision boundry seperating the known and unknown classes, the authors propose binary cross-entropy loss.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{adv}(x_t) =…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_{adv}(x_t) = -tlog(p(y = K + 1|x_t)) - (1 - t)log(1 - p(y = K + 1|x_t))\\
-\end{equation}&lt;/span&gt;
-Where $t$ is set as $0.5$.&lt;/p&gt;
+&lt;p&gt;Equation 5 refers to the cross-entropy loss used to train the model to identify the source data into one of the known classes.&lt;/p&gt;
 
-&lt;p&gt;The overall training objective becomes
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_C = min(L_s(…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_C = min(L_s(x_s, y_s) + L_{adv}(x_t, y_t)
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;\begin{equation}
+	L_s(x_s, y_s) = -log(p(y = y_s|x_s))
+\end{equation}&lt;/p&gt;
 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_G = min(L_s(…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
-\end{equation}&lt;/span&gt;
+&lt;p&gt;For training a classifier to learn a decision boundry seperating the known and unknown classes, the authors propose binary cross-entropy loss.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+	L_{adv}(x_t) = -tlog(p(y = K + 1|x_t)) - (1 - t)log(1 - p(y = K + 1|x_t))&lt;br /&gt;
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;Where $t$ is set as $0.5$.&lt;/p&gt;
+
+&lt;p&gt;The overall training objective becomes&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+	L_C = min(L_s(x_s, y_s) + L_{adv}(x_t, y_t)
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+	L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
+\end{equation}&lt;/p&gt;
 
 &lt;h5 id=&quot;intuition&quot;&gt;Intuition&lt;/h5&gt;
 
@@ -150,52 +151,58 @@ L_G = min(L_s(x_s, y_s) - L_{adv}(x_t, y_t)
 &lt;p&gt;In NC, the authors try to minimize the entropy of a target samples’ similarity distribution to other target samples and source prototype. By doing so, the authors claim that the target sample will either move to a nearby target sample or a source prototype. 
 To do so, the authors first calculate the similarity of each target point to all the other target samples and the class prototypes for each mini-batch of target features. In the paper, the class prototypes are the weight vectors of the last fully connected layer of the network trained to classify the source data points.&lt;/p&gt;
 
-&lt;p&gt;Thus, if $N_t$ denotes the number of target examples and K denotes the number of classes, then $V \in R^{N_t \times d}$ denotes the memory bank containing all the target features and $F \in R^{(N_t + K) \times d}$ denotes all the feature vectors in the memory bank and the prototype vectors where $d$ is the dimension of last linear layer.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-V = [V_1, V_2 …&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;Thus, if $N_t$ denotes the number of target examples and K denotes the number of classes, then $V \in R^{N_t \times d}$ denotes the memory bank containing all the target features and $F \in R^{(N_t + K) \times d}$ denotes all the feature vectors in the memory bank and the prototype vectors where $d$ is the dimension of last linear layer.&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 V = [V_1, V_2 \dots V_{N_t}]
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+\end{equation}&lt;/p&gt;
 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-F = [V_1, V_2,…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;\begin{equation}
 F = [V_1, V_2, \dots V_{N_t}, w_1, w2 \dots w_k]
-\end{equation}&lt;/span&gt;
+\end{equation}&lt;/p&gt;
 
-&lt;p&gt;Since the authors calculate the similarity of feature vectors at a mini-batch level, they employ $V$ to store the features which are not present in the mini-batch. Let $f_i$ denote the features in the mini-batch and $F_j$ denote the $j$-th term in $F$, then the similarity matrix for all the features in the mini-batch can be obtained by:
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-p_{i,j} = \fra…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;Since the authors calculate the similarity of feature vectors at a mini-batch level, they employ $V$ to store the features which are not present in the mini-batch. Let $f_i$ denote the features in the mini-batch and $F_j$ denote the $j$-th term in $F$, then the similarity matrix for all the features in the mini-batch can be obtained by:&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 p_{i,j} = \frac{exp(F_j^T f_i/\tau)}{Z_i}
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+\end{equation}&lt;/p&gt;
 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-Z_i = \sum_{j=…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;\begin{equation}
 Z_i = \sum_{j=1, j \ne i}^{N_t + K} exp(F_{j}^T f_i/\tau)
-\end{equation}&lt;/span&gt;
+\end{equation}&lt;/p&gt;
 
 &lt;p&gt;where, $\tau$ is the temperature parameter, which controls the number of neighbours for each sample.&lt;/p&gt;
 
-&lt;p&gt;The entropy is then calculated by 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{nc} = -\fra…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;The entropy is then calculated by&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 L_{nc} = -\frac{1}{B_t}\sum_{i \in B_t} \sum_{j=1,j \ne i}^{N_t + K}p_{i,j}log(p_{i,j})
-\end{equation}&lt;/span&gt;
-Here, $B_t$ refers to all target sample indices in the mini-batch.&lt;/p&gt;
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;Here, $B_t$ refers to all target sample indices in the mini-batch.&lt;/p&gt;
 
 &lt;p&gt;The authors make use of the entropy of the classifier’s output to separate the known from the unknown target samples. The intuition behind this is that “unknown” target samples are likely to have higher entropy since they do not share any common features with the “known” source classes.&lt;/p&gt;
 
-&lt;p&gt;The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $|H(p) - \rho|$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes.
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{es} = \frac…&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
-\end{equation}&lt;/span&gt;&lt;/p&gt;
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;The authors define a threshold boundry $\rho$ and try to maximize the distance between the entropy and the threshold which is defined as $&lt;/td&gt;
+      &lt;td&gt;H(p) - \rho&lt;/td&gt;
+      &lt;td&gt;$. They assume $\rho = \frac{log(K)}{2}$, $K$ being the number of classes. The value is chosen empirically. The authors further claim that the value of threshold is ambiguous and can change due to domain shift. Therefore, they introduce a confidence parameter $m$ such that the final form becomes.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L_{es}(p_i) = …&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
+&lt;p&gt;\begin{equation}
+L_{es} = \frac{1}{|B_t|}\sum_{i \in B_t}L_{es}(p_i)
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
 L_{es}(p_i) = \begin{cases} 
-      -|H(p_i) - \rho| &amp;amp; |H(p_i) - \rho|&amp;gt; m \\
+      -|H(p_i) - \rho| &amp;amp; |H(p_i) - \rho|&amp;gt; m &lt;br /&gt;
       0 &amp;amp; otherwise
    \end{cases}
-\end{equation}&lt;/span&gt;
+\end{equation}&lt;/p&gt;
 
 &lt;table&gt;
   &lt;tbody&gt;
@@ -207,12 +214,13 @@ L_{es}(p_i) = \begin{cases}
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;The final loss function then becomes 
-&lt;span class=&quot;katex-error&quot; title=&quot;ParseError: KaTeX parse error: No such environment: equation at position 7: \begin{̲e̲q̲u̲a̲t̲i̲o̲n̲}̲
-L = L_{cls} + …&quot; style=&quot;color:#cc0000&quot;&gt;\begin{equation}
-L = L_{cls} + \lambda(L_{nc} + L_{es})
-\end{equation}&lt;/span&gt;
-where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weight parameter.&lt;/p&gt;
+&lt;p&gt;The final loss function then becomes&lt;/p&gt;
+
+&lt;p&gt;\begin{equation}
+	L = L_{cls} + \lambda(L_{nc} + L_{es})
+\end{equation}&lt;/p&gt;
+
+&lt;p&gt;where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weight parameter.&lt;/p&gt;
 
 &lt;h3 id=&quot;category-agnostic-clusters-for-open-set-domain-adaptation&quot;&gt;Category-Agnostic Clusters for Open-Set Domain Adaptation&lt;/h3&gt;
 
@@ -227,7 +235,7 @@ where $L_{cls}$ is the classifier loss on source samples and $\lambda$ is a weig
 &lt;p&gt;SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.&lt;/p&gt;
 
 &lt;p&gt;\begin{equation}
-L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
+L_{SE} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
 \end{equation}&lt;/p&gt;
 
 &lt;p&gt;During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes&lt;/p&gt;
@@ -243,7 +251,7 @@ L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 &lt;p&gt;The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.&lt;/p&gt;
 
 &lt;p&gt;\begin{equation}
-\hat{P}&lt;em&gt;{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum&lt;/em&gt;{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
+	\overline{P_{clu}(x_t)}= \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
 \end{equation}&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Clustering Branch&lt;/strong&gt;&lt;/p&gt;
@@ -251,7 +259,7 @@ L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 &lt;p&gt;The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature’s cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.&lt;/p&gt;
 
 &lt;p&gt;\begin{equation}
-P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
+	P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
 \end{equation}&lt;/p&gt;
 
 &lt;p&gt;Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.&lt;/p&gt;
@@ -259,7 +267,7 @@ P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S
 &lt;p&gt;To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss.&lt;/p&gt;
 
 &lt;p&gt;\begin{equation}
-L_{KL} = \sum_{x_t \in T} KL(\hat{P}&lt;em&gt;{clu}(x_t)||P&lt;/em&gt;{clu}(x_t^S))
+	L_{KL} = \sum_{x_t \in T} KL(\hat{P}&lt;em&gt;{clu}(x_t)||P&lt;/em&gt;{clu}(x_t^S))
 \end{equation}&lt;/p&gt;
 
 &lt;p&gt;The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness.&lt;/p&gt;
