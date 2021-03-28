@@ -5,11 +5,10 @@ description: An introduction to popular practices in UDA.
 categories: [markdown]
 title:  A primer on Unsupervised Domain Adaptation
 coments: true
-use_math: true
 ---
 
 
-AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday life in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming. 
+AI has ushered us into a new era of a technological revolution. From detecting brain tumours to autonomous navigation, AI has founded its way into our everyday lives in a very short amount of time, so much so that there is a consensus that AI will soon take over the world. However, that possibility is still far into the future. At the heart of such tremendous advancement in AI are the Deep Learning (DL) algorithms. DL is a branch of machine learning algorithms that can approximate any function over a finite set of iterations. However, there are two limitations to this wonder algorithm. Firstly, they need a lot of hand-annotated training examples and secondly, they do not generalise well to examples outside of the training data. Although the first problem can be solved to a certain extent by synthetically generating training pairs, it is the issue with models not generalizing to out of distribution data that is more troublesome. For example, an autonomous navigation DL model trained on US road images will not work in the Indian setting. For a model to work on Indian roads we will need to collect and annotate huge amounts of data from Indian roads and train a model from scratch which is both expensive and time-consuming. 
 
 ## Introduction
 
@@ -17,7 +16,7 @@ The main reason behind a DL model's poor generalisability is the difference in t
 
 Formally, **Domain Adaptation** can be defined as a set of methods or practices that enable the model trained on a "source" data to perform well on a "target" data distribution. Finetuning can also be considered as a domain adaptation technique. However, in this blog post, we will look only at those domain adaptation techniques that do not require any labels in the target domain i.e. unsupervised domain adaptation.
 
-In this blog post, we look at several unsupervised domain adaptation techniques. This post can be thought of as a mini-literature survey meant to initiate the readers on the topic of UDA. Although there can be various approaches towards solving UDA, I have focused on two of the most common techniques: (a) Adversarial (b) Self-Supervised. For both approaches, I have picked some of the most relevant papers and tried to explain them as concisely as possible. 
+We will look at several unsupervised domain adaptation techniques. This post can be thought of as a mini-literature survey meant to initiate the readers on the topic of UDA. Although there can be various approaches towards solving UDA, I have focused on two of the most common techniques: (a) Adversarial (b) Self-Supervised. For both approaches, I have picked some of the most relevant papers and tried to explain them as concisely as possible. 
 
 
 
@@ -33,11 +32,11 @@ UDA aims to align the source and target features such that they are indistinguis
 
 #### Gradient Reversal
 
-[Ganin et al., 2016](https://arxiv.org/pdf/1409.7495.pdf) was one of the earliest works to explore domain adaptation via adversarial learning. The underlying principle is very simple. They formulate the problem as a classification task where the classifier should be able to perform well not just on source features but also on the target features. They define a feed-forward architecture that should be able to predict not just the label of the input but also its domain label i.e. whether it belongs to the source or target category. 
+[Ganin et al., 2016](https://arxiv.org/pdf/1409.7495.pdf) was one of the earliest works to explore domain adaptation via adversarial learning. The underlying principle is very simple. The authors formulate the problem as a classification task where the classifier should be able to perform well not just on source features but also on the target features. They define a feed-forward architecture that should be able to predict not just the **label** of the input but also its **domain label** i.e. whether it belongs to the source or target category. 
 
 They decompose such a mapping into three parts (refer Fig.2.): 
 
-1. $G_f(a\ feature\ extarctor)$ with parameters $\theta_f$ which maps the input $x$ into a $D$-dimensional feature vector ($f$) which is then mapped by 
+1. $G_f(a\ feature\ extarctor)$ with parameters $\theta_f$ which maps the input $x$ into a $D$-dimensional feature vector ($f$)
 2. $G_y(label\ predictor)$ with parameters $\theta_y$ which maps the feature vector $f$ to a label space $y$. 
 3. $G_d$ with parameters $\theta_d$, which maps the same feature vector $f$ to the domain label $d$.
 
@@ -54,7 +53,7 @@ E(\theta_f, \theta_y, \theta_d)=\sum_{l=1 \atop d_{i}=0}^{N} L_{y}\left(\theta_{
 Equation 1 represents the overall loss function. Here $L_y$ is the classifier loss, $L_d$ is the domain classifier loss. Optimal parameters will result in a saddle point.
 
 \begin{equation}
-	(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d)\\
+	(\theta_f, \theta_y) = arg\ min E(\theta_f, \theta_y, \theta_d) \\
 \end{equation}
 
 
