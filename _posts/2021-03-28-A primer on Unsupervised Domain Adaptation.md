@@ -293,7 +293,7 @@ Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k
 To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
 
 \begin{equation}
-	L_{KL} = \sum_{x_t \in T} KL(\hat{P_{clu}(x_t)}||P_{clu}(x_t^S))
+	L_{KL} = \sum_{x_t \in T} KL(\overline{P_{clu}(x_t)}||P_{clu}(x_t^S))
 \end{equation}
 
 The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations. With the above formulation, the authors achieve the best results on open-set DA tasks.
