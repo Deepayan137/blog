@@ -96,11 +96,11 @@ They proposed a method where in addition to the supervised classification loss o
 
 
 So if $S = \{(x_i, y_i), i=1\dots m\}$ is the labeled source data and $T = \{(x_i), i = 1 \dots n\}$ is the unlabelled target data then the overall loss function can be written as:
-$$
+
 \begin{equation}
 L = \sum L_0(S;\phi,h_0) + \sum_{k=1}^{K}L_k(S,T;\phi,h_k)\\
 \end{equation}
-$$
+
 Here, we see that the term $L_k$ unlike the term $L_0$ takes both the source and target examples which is crucial for inducing feature alignment. In their paper, the authors set $K=3$, where the auxiliary tasks are the ones mentioned above.
 
 #### Jigsaw puzzles 
@@ -260,45 +260,47 @@ Till now in open domain set domain adaptation we learn a binary classifier to cl
 **Self-Ensembling** 
 
 SE is similar to consistency based training where a two perturbed version of the same data point is passed to the network and the network should predict similar classification distribution over all the classes for both versions. The proposed architecture consists of a Student and a Teacher branch. Given two perturbed versions $x_t^S$ and $x_t^T$ from the same target sample $x_t$, the SE loss penalizes the difference between classification predictions of student and teacher branch.
-$$
+
 \begin{equation}
-L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||_2^2
+L_{se} = ||P_{cls}^S(x_t^S) - P_{cls}^T(x_t^T)||^2
 \end{equation}
-$$
+
+
 During training, the student model is trained using gradient descent while the weights of the teacher model are adjusted using the Exponential moving average of student weights. The authors also make use of conditional entropy to train the student branch. Thus, overall loss becomes
-$$
+
 \begin{equation}
 L_{SEC} = \sum L_{CLS}(x_s, y_s) + \sum_{x \in T} (L_{SE}(x_t) + L_{CDE}(x_t))
 \end{equation}
-$$
+
 **Category Agnostic Clustering**
 
 To not group all the unknown target samples in just one class, the authors introduce a clustering branch in the student model to align its estimated cluster assignment distribution with the inherent cluster distribution among the category-agnostic clusters.
 
 The authors perform K-means clustering over the target features. Although, the clusters so obtained is category agnostic, they reveal the underlying data distribution in the target domain i.e. its inherent cluster distribution. Next, the authors compute softmax over the cosine similarity between target samples and each cluster centroid.
-$$
+
+
 \begin{equation}
 \hat{P}_{clu}(x_t) = \frac{e^{\rho . cos(x_t, \mu_k)}}{\sum_{k}e^{\rho . cos(x_t, \mu_k)}}, \mu_k=\frac{1}{|C_k|}\sum_{x_t \in C_k} x_t
 \end{equation}
-$$
+
 
 
 **Clustering Branch**
 
 The clustering branch is designed to predict the distribution over all category category-agnostic clusters. Depending on the input feature $x_t^S$ the clustering branch assigns it to one of the $K$ clusters and that is how we obtain the target feature's cluster assignment distribution $P^k_{clu}(x_t^S) \in \R$ via a modified softmax layer.
-$$
+
 \begin{equation}
 P_{clu}^k(x_t^S) = \frac{e^{\rho . cos(x_t^S, W_k)}}{\sum_{k}e^{\rho . cos{x_t^S, W_k}}}
 \end{equation}
-$$
+
 Here, $P_{clu}^k(x_t^S)$ represents the probability of assigning $x_t^S$ into $k$-th cluster. $W_k$ is the $k$-th row of parameter matrix $W \in \R^{K \times M}$ in the modified softmax layer, represents the cluster assignment parameter matrix for the $k$-th cluster.
 
 To measure the similarity between the estimated cluster assignment from the clustering branch and the inherent cluster distribution obtained using $K$-means clustering, the authors have used the KL-divergence loss. 
-$$
+
 \begin{equation}
 L_{KL} = \sum_{x_t \in T} KL(\hat{P}_{clu}(x_t)||P_{clu}(x_t^S))
 \end{equation}
-$$
+
 The authors claim that by enforcing KL divergence, the learnt representations for target samples belonging to the known samples     become aligned to the source and all the target samples retain their inherent discriminitiveness. 
 
 In addition to the above practices, the authors also make use of Mutual Information both at local and global level to further enhance the learnt representations. 
